@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <DebugType>portable</DebugType>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IsNsfw.Command\IsNsfw.Command.csproj" />
+    <ProjectReference Include="..\IsNsfw.Repository\IsNsfw.Repository.csproj" />
+    <ProjectReference Include="..\IsNsfw.ServiceInterface\IsNsfw.ServiceInterface.csproj" />
+    <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />
+    <PackageReference Include="Moq" Version="4.8.2" />
+
+    <PackageReference Include="NUnit" Version="3.9.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="ServiceStack" Version="5.1.1" />
+    <PackageReference Include="ServiceStack.Kestrel" Version="5.1.1" />
+    <PackageReference Include="ServiceStack.OrmLite.Sqlite.Core" Version="5.1.0" />
+  </ItemGroup>
+
+</Project>
