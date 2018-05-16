@@ -22,9 +22,9 @@ namespace IsNsfw.Command.Domains
 
             UnitOfWork(db =>
             {
-                var id = db.Insert(link);
+                db.Save(link);
 
-                command.Id = (int)id;
+                command.Id = link.Id;
 
                 if(command.TagIds != null)
                 {

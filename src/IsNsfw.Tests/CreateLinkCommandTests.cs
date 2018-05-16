@@ -21,25 +21,22 @@ namespace IsNsfw.Tests
 {
     public class CreateLinkCommandTests
     {
-        private readonly ServiceStackHost _appHost;
-        private LinkRepository _linkRepo;
-        private LinkCommandHandlers _linkDomain;
-        private IDbConnection _db;
+        private readonly LinkRepository _linkRepo;
+        private readonly LinkCommandHandlers _linkDomain;
+        private readonly IDbConnection _db;
+        private readonly OrmLiteConnectionFactory _dbFactory;
 
         public CreateLinkCommandTests()
         {
-            _appHost = new BasicAppHost().Init();
-            _appHost.Container.AddTransient<MyServices>();
-            
-            _appHost.Container.Register<IDbConnectionFactory>(c => new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider));
+            _dbFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
 
-            _db = _appHost.Container.Resolve<IDbConnectionFactory>().Open();
+            _db = _dbFactory.Open();
 
             _db.CreateTableIfNotExists<User>();
             _db.CreateTableIfNotExists<Link>();
 
-            _linkRepo = new LinkRepository(_appHost.Container.TryResolve<IDbConnectionFactory>());
-            _linkDomain = new LinkCommandHandlers(_appHost.Container.TryResolve<IDbConnectionFactory>());
+            _linkRepo = new LinkRepository(_dbFactory);
+            _linkDomain = new LinkCommandHandlers(_dbFactory);
         }
 
         [TearDown]
@@ -52,8 +49,9 @@ namespace IsNsfw.Tests
         [OneTimeTearDown]
         public void OneTimeTearDown()
         {
+            _db.DeleteAll<User>();
+            _db.DeleteAll<Link>();
             _db.Dispose();
-            _appHost.Dispose();
         }
 
         public ICommandHandler<CreateLinkCommand> GetCommandHandler()
@@ -75,6 +73,54 @@ namespace IsNsfw.Tests
             sut.Handle(req);
 
             Assert.AreNotEqual(0, req.Id);
+        }
+
+        [Test]
+        public void LinkPersistedInDatabase()
+        {
+            var sut = GetCommandHandler();
+
+            var req = new CreateLinkCommand()
+            {
+                Key = "Hello",
+                Url = "http://www.google.com"
+            };
+
+            sut.Handle(req);
+
+            Assert.IsNotNull(_db.Single<Link>(m => m.Id == req.Id));
+        }
+
+        [Test]
+        public void CreatedLinkContainsKey()
+        {
+            var sut = GetCommandHandler();
+
+            var req = new CreateLinkCommand()
+            {
+                Key = "Hello",
+                Url = "http://www.google.com"
+            };
+
+            sut.Handle(req);
+
+            Assert.AreEqual(req.Key, _db.Single<Link>(m => m.Id == req.Id).Key);
+        }
+
+        [Test]
+        public void CreatedLinkContainsUrl()
+        {
+            var sut = GetCommandHandler();
+
+            var req = new CreateLinkCommand()
+            {
+                Key = "Hello",
+                Url = "http://www.google.com"
+            };
+
+            sut.Handle(req);
+
+            Assert.AreEqual(req.Url, _db.Single<Link>(m => m.Id == req.Id).Url);
         }
 
         [Test]
