@@ -34,6 +34,8 @@ namespace IsNsfw.Tests
 
             _db.CreateTableIfNotExists<User>();
             _db.CreateTableIfNotExists<Link>();
+            _db.CreateTableIfNotExists<Tag>();
+            _db.CreateTableIfNotExists<LinkTag>();
 
             _linkRepo = new LinkRepository(_dbFactory);
             _linkDomain = new LinkCommandHandlers(_dbFactory);
@@ -43,6 +45,8 @@ namespace IsNsfw.Tests
         public void TearDown()
         {
             _db.DeleteAll<User>();
+            _db.DeleteAll<LinkTag>();
+            _db.DeleteAll<Tag>();
             _db.DeleteAll<Link>();
         }
 
@@ -50,6 +54,8 @@ namespace IsNsfw.Tests
         public void OneTimeTearDown()
         {
             _db.DeleteAll<User>();
+            _db.DeleteAll<LinkTag>();
+            _db.DeleteAll<Tag>();
             _db.DeleteAll<Link>();
             _db.Dispose();
         }
@@ -77,6 +83,32 @@ namespace IsNsfw.Tests
         }
 
         [Test]
+        public void CanCreateLinkWithTags()
+        {
+            var sut = GetCommandHandler();
+
+            var tags = new []
+            {
+                new Tag() { Key = "T1" },
+                new Tag() { Key = "T2" },
+                new Tag() { Key = "T3" },
+            };
+            _db.SaveAll(tags);
+
+            var req = new CreateLinkCommand()
+            {
+                Key       = "Hello",
+                Url       = "http://www.google.com",
+                SessionId = "test",
+                TagIds    = new HashSet<int>() { tags[0].Id, tags[1].Id }
+            };
+
+            sut.Handle(req);
+
+            Assert.AreNotEqual(0, req.Id);
+        }
+
+        [Test]
         public void LinkPersistedInDatabase()
         {
             var sut = GetCommandHandler();
@@ -91,6 +123,32 @@ namespace IsNsfw.Tests
             sut.Handle(req);
 
             Assert.IsNotNull(_db.Single<Link>(m => m.Id == req.Id));
+        }
+
+        [Test]
+        public void CreateLinkWithTagsPersistedInDatabase()
+        {
+            var sut = GetCommandHandler();
+
+            var tags = new []
+            {
+                new Tag() { Key = "T1" },
+                new Tag() { Key = "T2" },
+                new Tag() { Key = "T3" },
+            };
+            _db.SaveAll(tags);
+
+            var req = new CreateLinkCommand()
+            {
+                Key       = "Hello",
+                Url       = "http://www.google.com",
+                SessionId = "test",
+                TagIds    = new HashSet<int>() { tags[0].Id, tags[1].Id }
+            };
+
+            sut.Handle(req);
+
+            Assert.AreNotEqual(2, _db.Count<LinkTag>(m => m.LinkId == req.Id));
         }
 
         [Test]
