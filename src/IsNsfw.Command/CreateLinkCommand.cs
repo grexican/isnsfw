@@ -10,6 +10,7 @@ namespace IsNsfw.Command
 {
     public class CreateLinkCommand : ICommandWithIntResult
     {
+        public string SessionId { get; set; }
         public string Key { get; set; }
         public string Url { get; set; }
         public int? UserId { get; set; }
@@ -26,6 +27,7 @@ namespace IsNsfw.Command
         public CreateLinkCommandValidator(ILinkRepository linkRepo)
         {
             _linkRepo = linkRepo;
+            RuleFor(m => m.SessionId).NotEmpty();
             RuleFor(m => m.Key).NotEmpty();
             RuleFor(m => m.Url).NotEmpty().MustBeAUrl();
         }

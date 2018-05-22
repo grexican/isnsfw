@@ -67,7 +67,8 @@ namespace IsNsfw.Tests
             var req = new CreateLinkCommand()
             {
                 Key = "Hello",
-                Url = "http://www.google.com"
+                Url = "http://www.google.com",
+                SessionId = "test",
             };
 
             sut.Handle(req);
@@ -83,7 +84,8 @@ namespace IsNsfw.Tests
             var req = new CreateLinkCommand()
             {
                 Key = "Hello",
-                Url = "http://www.google.com"
+                Url = "http://www.google.com",
+                SessionId = "test",
             };
 
             sut.Handle(req);
@@ -99,7 +101,8 @@ namespace IsNsfw.Tests
             var req = new CreateLinkCommand()
             {
                 Key = "Hello",
-                Url = "http://www.google.com"
+                Url = "http://www.google.com",
+                SessionId = "test",
             };
 
             sut.Handle(req);
@@ -115,7 +118,8 @@ namespace IsNsfw.Tests
             var req = new CreateLinkCommand()
             {
                 Key = "Hello",
-                Url = "http://www.google.com"
+                Url = "http://www.google.com",
+                SessionId = "test",
             };
 
             sut.Handle(req);
@@ -128,7 +132,7 @@ namespace IsNsfw.Tests
         {
             var sut = GetCommandHandler();
             
-            _db.Insert(new Link() { Key = "Hello", Url = "http://www.test.com" });
+            _db.Insert(new Link() { Key = "Hello", Url = "http://www.test.com", SessionId = "test" });
 
             var req = new CreateLinkCommand()
             {

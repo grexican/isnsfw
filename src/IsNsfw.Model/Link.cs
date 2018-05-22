@@ -17,6 +17,10 @@ namespace IsNsfw.Model
         [Index(Unique = true)]
         public string Key { get; set; }
 
+        [Required]
+        [StringLength(20)]
+        public string SessionId { get; set; }
+
         public string Url { get; set; }
 
         public bool IsDeleted { get; set; }

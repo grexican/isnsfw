@@ -22,6 +22,8 @@ namespace IsNsfw.Model
         [StringLength(1000)]
         public string LongDescription { get; set; }
 
+        public int SortOrder { get; set; }
+
         public bool IsDeleted { get; set; }
     }
 }

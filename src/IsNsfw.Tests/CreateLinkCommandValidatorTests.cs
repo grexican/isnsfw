@@ -32,10 +32,20 @@ namespace IsNsfw.Tests
         }
 
         [Test]
+        public void ErrorIfNullSessionId()
+        {
+            var sut     = new CreateLinkCommandValidator(null);
+            var results = sut.Validate(new CreateLinkCommand() { });
+
+            Assert.IsFalse(results.IsValid);
+            Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.SessionId)));
+        }
+
+        [Test]
         public void ErrorIfBlankUrl()
         {
             var sut     = new CreateLinkCommandValidator(null);
-            var results = sut.Validate(new CreateLinkCommand() { Url = "" });
+            var results = sut.Validate(new CreateLinkCommand() { Url = " " });
 
             Assert.IsFalse(results.IsValid);
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.Url)));
@@ -45,10 +55,20 @@ namespace IsNsfw.Tests
         public void ErrorIfBlankKey()
         {
             var sut     = new CreateLinkCommandValidator(null);
-            var results = sut.Validate(new CreateLinkCommand() { Key = "" });
+            var results = sut.Validate(new CreateLinkCommand() { Key = " " });
 
             Assert.IsFalse(results.IsValid);
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.Key)));
+        }
+
+        [Test]
+        public void ErrorIfBlankSessionId()
+        {
+            var sut     = new CreateLinkCommandValidator(null);
+            var results = sut.Validate(new CreateLinkCommand() { SessionId = " " });
+
+            Assert.IsFalse(results.IsValid);
+            Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.SessionId)));
         }
 
         [Test]
@@ -58,7 +78,7 @@ namespace IsNsfw.Tests
             linkRepo.Setup(m => m.KeyExists(It.IsAny<string>())).Returns(false);
 
             var sut     = new CreateLinkCommandValidator(linkRepo.Object);
-            var results = sut.Validate(new CreateLinkCommand() { Key = "Test", Url = "bad url" });
+            var results = sut.Validate(new CreateLinkCommand() { Key = "Test", Url = "bad url", SessionId = "123" });
 
             Assert.IsFalse(results.IsValid);
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.Url)));
@@ -71,7 +91,7 @@ namespace IsNsfw.Tests
             linkRepo.Setup(m => m.KeyExists(It.IsAny<string>())).Returns(true);
 
             var sut     = new CreateLinkCommandValidator(linkRepo.Object);
-            var results = sut.Validate(new CreateLinkCommand() { Url = "http://www.google.com", Key = "werd" });
+            var results = sut.Validate(new CreateLinkCommand() { Url = "http://www.google.com", Key = "werd", SessionId = "123" });
 
             Assert.IsFalse(results.IsValid);
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkCommand.Key)));
