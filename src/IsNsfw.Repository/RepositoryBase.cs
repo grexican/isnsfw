@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Text;
+using IsNsfw.Model;
 using IsNsfw.Repository.Interface;
 using ServiceStack.Data;
 using ServiceStack.Model;
@@ -18,23 +19,50 @@ namespace IsNsfw.Repository
             _factory = factory;
         }
 
-        public T GetById(TIndex id)
+        public virtual T GetById(TIndex id)
         {
             return Execute(db => db.SingleById<T>(id));
         }
 
-        public void DeleteById(TIndex id)
+        public virtual void DeleteById(TIndex id)
         {
-            Execute(db => db.DeleteById<T>(id));
+            if(typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+            {
+                Execute(db => db.Update<T>(new { IsDeleted = true }, where: m => m.Id.Equals(id)));
+            }
+            else
+            {
+                Execute(db => db.DeleteById<T>(id));
+            }
         }
 
-        public void Execute(Action<IDbConnection> a)
+        public void ExecuteTransaction(Action<IDbConnection, IDbTransaction> a)
+        {
+            using(var db = _factory.OpenDbConnection())
+            using(var trans = db.OpenTransaction())
+            {
+                a(db, trans);
+            }
+        }
+
+        public void UnitOfWork(Action<IDbConnection> a)
+        {
+            using (var db = _factory.OpenDbConnection())
+            using (var trans = db.OpenTransaction())
+            {
+                a(db);
+
+                trans.Commit();
+            }
+        }
+
+        public virtual void Execute(Action<IDbConnection> a)
         {
             using(var db = _factory.OpenDbConnection())
                 a(db);
         }
 
-        public TResult Execute<TResult>(Func<IDbConnection, TResult> a)
+        public virtual TResult Execute<TResult>(Func<IDbConnection, TResult> a)
         {
             using(var db = _factory.OpenDbConnection())
                 return a(db);

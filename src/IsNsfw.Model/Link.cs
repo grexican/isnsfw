@@ -39,7 +39,7 @@ namespace IsNsfw.Model
         [Reference]
         public List<LinkTag> LinkTags { get; set; }
 
-        [Ignore]
-        public List<Tag> Tags { get; set; }
+        //[Ignore]
+        //public List<Tag> Tags { get; set; }
     }
 }
