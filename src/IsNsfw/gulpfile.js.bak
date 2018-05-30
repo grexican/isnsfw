@@ -1,0 +1,27 @@
+﻿"use strict";
+
+var gulp = require("gulp");
+var fs = require("fs");
+var sass = require("gulp-sass");
+
+gulp.task("sass", function () {
+    return gulp.src('wwwroot/assets/scss/bootstrap.scss')
+        .pipe(sass())
+        .pipe(gulp.dest('wwwroot/assets/css/isnsfw.css'));
+});
+
+gulp.task('default', function() {
+    gulp.run('sass');
+
+    //gulp.watch('app/src/**', function(event) {
+    //    gulp.run('scripts');
+    //});
+
+    gulp.watch('wwwroot/assets/scss/**', function(event) {
+        gulp.run('sass');
+    });
+
+    //gulp.watch('app/**/*.html', function(event) {
+    //    gulp.run('html');
+    //})
+})

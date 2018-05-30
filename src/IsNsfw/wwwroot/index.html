@@ -29,7 +29,7 @@ title: Bootstrap Templates Starter
 $('#Name').keyup(function () {
   var name = $('#Name').val();
   if (name) {
-    $.getJSON('/hello/' + name, function (r) {
+    $.getJSON('/api/hello/' + name, function (r) {
       $('#result').html(r.result);
     });
   } else {

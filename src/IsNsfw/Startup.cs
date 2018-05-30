@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
@@ -28,9 +30,17 @@ namespace IsNsfw
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseServiceStack(new AppHost
+            var ah = new AppHost
             {
                 AppSettings = new NetCoreAppSettings(Configuration)
+            };
+
+            app.UseServiceStack(ah);
+
+            ah.SetConfig(new HostConfig
+            { 
+                DebugMode          = env.IsDevelopment(), 
+                //HandlerFactoryPath = "api",
             });
         }
     }
