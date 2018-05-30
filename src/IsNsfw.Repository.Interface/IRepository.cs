@@ -9,6 +9,8 @@ namespace IsNsfw.Repository.Interface
     {
         T GetById(TIdType id);
         void DeleteById(TIdType id);
+        TIdType Create(T item);
+        void Update(T item);
     }
 
     public interface IIntRepository<T> : IRepository<T, int> where T : IHasId<int> { }

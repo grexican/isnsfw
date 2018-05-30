@@ -1,11 +1,16 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ServiceStack.Interfaces.Core" Version="5.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IsNsfw.Model\IsNsfw.Model.csproj" />
+    <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />
   </ItemGroup>
 
   <ItemGroup>

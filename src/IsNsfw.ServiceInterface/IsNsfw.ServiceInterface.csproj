@@ -6,9 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="ServiceStack" Version="5.1.1" />
+    <PackageReference Include="SimpleInjector" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IsNsfw.Repository.Interface\IsNsfw.Repository.Interface.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />
   </ItemGroup>
 

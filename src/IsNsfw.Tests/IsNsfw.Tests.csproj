@@ -7,7 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IsNsfw.Command\IsNsfw.Command.csproj" />
+    <Compile Remove="CreateLinkEventCommandValidatorTests.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\IsNsfw.Repository\IsNsfw.Repository.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceInterface\IsNsfw.ServiceInterface.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />

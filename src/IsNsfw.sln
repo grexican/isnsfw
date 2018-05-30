@@ -11,17 +11,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.ServiceModel", "IsNs
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Tests", "IsNsfw.Tests\IsNsfw.Tests.csproj", "{455EC1EF-134F-4CD4-9C78-E813E4E6D8F6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Model", "IsNsfw.Model\IsNsfw.Model.csproj", "{31C3317B-F9DE-4069-A483-100B3E492511}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Model", "IsNsfw.Model\IsNsfw.Model.csproj", "{31C3317B-F9DE-4069-A483-100B3E492511}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Migration", "IsNsfw.Migration\IsNsfw.Migration.csproj", "{6EB5465A-5A1C-419D-A89F-B7C1DD104AEA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Migration", "IsNsfw.Migration\IsNsfw.Migration.csproj", "{6EB5465A-5A1C-419D-A89F-B7C1DD104AEA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Command", "IsNsfw.Command\IsNsfw.Command.csproj", "{CA6EEDE5-E092-4CDB-A832-0B3CE3D4C95C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Repository", "IsNsfw.Repository\IsNsfw.Repository.csproj", "{9767D3F8-2EA0-4F8A-AF2A-16E944A56E87}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Repository", "IsNsfw.Repository\IsNsfw.Repository.csproj", "{9767D3F8-2EA0-4F8A-AF2A-16E944A56E87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Repository.Interface", "IsNsfw.Repository.Interface\IsNsfw.Repository.Interface.csproj", "{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Repository.Interface", "IsNsfw.Repository.Interface\IsNsfw.Repository.Interface.csproj", "{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Command.Interface", "IsNsfw.Command.Interface\IsNsfw.Command.Interface.csproj", "{0234C1C8-6697-4DCC-AE53-3EFD02A23A08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Service", "IsNsfw.Service\IsNsfw.Service.csproj", "{DD64874C-464F-40B3-9965-C1A99F4816D4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +51,6 @@ Global
 		{6EB5465A-5A1C-419D-A89F-B7C1DD104AEA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6EB5465A-5A1C-419D-A89F-B7C1DD104AEA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6EB5465A-5A1C-419D-A89F-B7C1DD104AEA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CA6EEDE5-E092-4CDB-A832-0B3CE3D4C95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CA6EEDE5-E092-4CDB-A832-0B3CE3D4C95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CA6EEDE5-E092-4CDB-A832-0B3CE3D4C95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CA6EEDE5-E092-4CDB-A832-0B3CE3D4C95C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9767D3F8-2EA0-4F8A-AF2A-16E944A56E87}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9767D3F8-2EA0-4F8A-AF2A-16E944A56E87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9767D3F8-2EA0-4F8A-AF2A-16E944A56E87}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -65,10 +59,10 @@ Global
 		{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0234C1C8-6697-4DCC-AE53-3EFD02A23A08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0234C1C8-6697-4DCC-AE53-3EFD02A23A08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0234C1C8-6697-4DCC-AE53-3EFD02A23A08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0234C1C8-6697-4DCC-AE53-3EFD02A23A08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

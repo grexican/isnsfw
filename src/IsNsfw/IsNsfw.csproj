@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\IsNsfw.ServiceInterface\IsNsfw.ServiceInterface.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />
+    <ProjectReference Include="..\IsNsfw.Service\IsNsfw.Service.csproj" />
   </ItemGroup>
   
   <ItemGroup>

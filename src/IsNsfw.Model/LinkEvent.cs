@@ -5,7 +5,7 @@ using ServiceStack.OrmLite;
 
 namespace IsNsfw.Model
 {
-    public class LinkEvent : IHasIntId
+    public class LinkEvent : IHasIntId, ICreatedAt
     {
         [AutoIncrement]
         [PrimaryKey]
@@ -20,7 +20,7 @@ namespace IsNsfw.Model
 
         [Index]
         [References(typeof(Link))]
-        public int? LinkId { get; set; }
+        public int LinkId { get; set; }
 
         [Reference]
         public User User { get; set; }
@@ -31,6 +31,6 @@ namespace IsNsfw.Model
         public LinkEventType LinkEventType { get; set; }
 
         [Default(OrmLiteVariables.SystemUtc)]           // Populated with UTC Date by RDBMS
-        public DateTime Timestamp { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

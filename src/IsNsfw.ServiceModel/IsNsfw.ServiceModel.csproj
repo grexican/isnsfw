@@ -5,11 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ServiceStack.Interfaces" Version="5.1.1" />
+    <PackageReference Include="ServiceStack.Interfaces.Core" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Types\" />
+    <ProjectReference Include="..\IsNsfw.Model\IsNsfw.Model.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\Users\egassert\.nuget\packages\servicestack.text\5.1.1\lib\netstandard2.0\ServiceStack.Text.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

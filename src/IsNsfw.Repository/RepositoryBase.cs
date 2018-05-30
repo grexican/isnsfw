@@ -26,7 +26,7 @@ namespace IsNsfw.Repository
 
         public virtual void DeleteById(TIndex id)
         {
-            if(typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
+            if (typeof(ISoftDelete).IsAssignableFrom(typeof(T)))
             {
                 Execute(db => db.Update<T>(new { IsDeleted = true }, where: m => m.Id.Equals(id)));
             }
@@ -36,12 +36,38 @@ namespace IsNsfw.Repository
             }
         }
 
+        public virtual TIndex Create(T item)
+        {
+            return Execute(db =>
+            {
+                db.Save(item);
+                return item.Id;
+            });
+        }
+
+        public virtual void Update(T item)
+        {
+            Execute(db =>
+            {
+                db.Update(item);
+            });
+        }
+
         public void ExecuteTransaction(Action<IDbConnection, IDbTransaction> a)
         {
-            using(var db = _factory.OpenDbConnection())
-            using(var trans = db.OpenTransaction())
+            using (var db = _factory.OpenDbConnection())
+            using (var trans = db.OpenTransaction())
             {
                 a(db, trans);
+            }
+        }
+
+        public TResult ExecuteTransaction<TResult>(Func<IDbConnection, IDbTransaction, TResult> a)
+        {
+            using (var db = _factory.OpenDbConnection())
+            using (var trans = db.OpenTransaction())
+            {
+                return a(db, trans);
             }
         }
 
@@ -56,9 +82,22 @@ namespace IsNsfw.Repository
             }
         }
 
+        public TResult UnitOfWork<TResult>(Func<IDbConnection, TResult> a)
+        {
+            using (var db = _factory.OpenDbConnection())
+            using (var trans = db.OpenTransaction())
+            {
+                var ret = a(db);
+
+                trans.Commit();
+
+                return ret;
+            }
+        }
+
         public virtual void Execute(Action<IDbConnection> a)
         {
-            using(var db = _factory.OpenDbConnection())
+            using (var db = _factory.OpenDbConnection())
                 a(db);
         }
 

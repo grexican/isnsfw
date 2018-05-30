@@ -48,7 +48,7 @@ namespace IsNsfw.Command.Domains
             UnitOfWork(db =>
             {
                 var c = command.ConvertTo<LinkEvent>();
-                c.Timestamp = DateTime.UtcNow;
+                c.CreatedAt = DateTime.UtcNow;
                 db.Save(c);
 
                 switch(c.LinkEventType)

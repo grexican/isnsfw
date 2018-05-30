@@ -1,34 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
+using System.Linq;
 using System.Text;
-using IsNsfw.Command;
-using IsNsfw.Command.Domains;
-using IsNsfw.Command.Interface;
 using IsNsfw.Model;
 using IsNsfw.Repository;
 using IsNsfw.Repository.Interface;
 using IsNsfw.ServiceInterface;
+using IsNsfw.ServiceModel;
+using IsNsfw.ServiceModel.Types;
 using Moq;
 using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Data;
 using ServiceStack.FluentValidation;
+using ServiceStack.Host;
+using ServiceStack.Logging;
 using ServiceStack.OrmLite;
 using ServiceStack.Testing;
 
 namespace IsNsfw.Tests
 {
-    public class CreateLinkCommandTests
+    public class CreateLinkRequestTests
     {
         private readonly LinkRepository _linkRepo;
-        private readonly LinkCommandHandlers _linkDomain;
+        private readonly TagRepository _tagRepo;
         private readonly IDbConnection _db;
         private readonly OrmLiteConnectionFactory _dbFactory;
+        private ServiceStackHost _appHost;
 
-        public CreateLinkCommandTests()
+        public CreateLinkRequestTests()
         {
+            LogManager.LogFactory = new DebugLogFactory(debugEnabled:true);
+
+            _appHost = new BasicAppHost().Init();
+            var container = _appHost.Container;
+
             _dbFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
+            OrmLiteConfig.BeforeExecFilter = cmd => Debug.WriteLine(cmd.GetDebugString());
 
             _db = _dbFactory.Open();
 
@@ -38,7 +48,7 @@ namespace IsNsfw.Tests
             _db.CreateTableIfNotExists<LinkTag>();
 
             _linkRepo = new LinkRepository(_dbFactory);
-            _linkDomain = new LinkCommandHandlers(_dbFactory);
+            _tagRepo = new TagRepository(_dbFactory);
         }
 
         [TearDown]
@@ -58,34 +68,45 @@ namespace IsNsfw.Tests
             _db.DeleteAll<Tag>();
             _db.DeleteAll<Link>();
             _db.Dispose();
+
+            _appHost.Dispose();
         }
 
-        public ICommandHandler<CreateLinkCommand> GetCommandHandler()
+        public LinkService GetService(string sessionId = "12345")
         {
-            return new ValidationCommandHandlerDecorator<CreateLinkCommand>(_linkDomain, new CreateLinkCommandValidator(_linkRepo));
+            var ret = new LinkService(_linkRepo, _tagRepo);
+
+            ret.Request = new BasicHttpRequest()
+            {
+                Items =
+                {
+                    [Keywords.Session] = new AuthUserSession() { Id = sessionId }
+                }
+            };
+            
+            return ret;
         }
 
         [Test]
         public void CanCreateLink()
         {
-            var sut = GetCommandHandler();
+            var sut = GetService();
 
-            var req = new CreateLinkCommand()
+            var req = new CreateLinkRequest()
             {
                 Key = "Hello",
                 Url = "http://www.google.com",
-                SessionId = "test",
             };
 
-            sut.Handle(req);
+            var res = (LinkResponse)sut.Post(req);
 
-            Assert.AreNotEqual(0, req.Id);
+            Assert.AreNotEqual(0, res.Id);
         }
 
         [Test]
         public void CanCreateLinkWithTags()
         {
-            var sut = GetCommandHandler();
+            var sut = GetService();
 
             var tags = new []
             {
@@ -93,42 +114,44 @@ namespace IsNsfw.Tests
                 new Tag() { Key = "T2" },
                 new Tag() { Key = "T3" },
             };
+
             _db.SaveAll(tags);
 
-            var req = new CreateLinkCommand()
+            var req = new CreateLinkRequest()
             {
                 Key       = "Hello",
                 Url       = "http://www.google.com",
-                SessionId = "test",
-                TagIds    = new HashSet<int>() { tags[0].Id, tags[1].Id }
+                Tags      = new HashSet<string>() { tags[0].Key, tags[1].Key }
             };
 
-            sut.Handle(req);
+            var res = (LinkResponse)sut.Post(req);
 
-            Assert.AreNotEqual(0, req.Id);
+            Assert.AreNotEqual(0, res.Id);
+            Assert.AreEqual(2, res.Tags.Count);
+            Assert.Contains(tags[0].Key, res.Tags.ToList());
+            Assert.Contains(tags[1].Key, res.Tags.ToList());
         }
 
         [Test]
         public void LinkPersistedInDatabase()
         {
-            var sut = GetCommandHandler();
+            var sut = GetService();
 
-            var req = new CreateLinkCommand()
+            var req = new CreateLinkRequest()
             {
                 Key = "Hello",
                 Url = "http://www.google.com",
-                SessionId = "test",
             };
 
-            sut.Handle(req);
+            var res = (LinkResponse)sut.Post(req);
 
-            Assert.IsNotNull(_db.Single<Link>(m => m.Id == req.Id));
+            Assert.IsNotNull(_db.Single<Link>(m => m.Id == res.Id));
         }
 
         [Test]
         public void CreateLinkWithTagsPersistedInDatabase()
         {
-            var sut = GetCommandHandler();
+            var sut = GetService();
 
             var tags = new []
             {
@@ -138,67 +161,48 @@ namespace IsNsfw.Tests
             };
             _db.SaveAll(tags);
 
-            var req = new CreateLinkCommand()
+            var req = new CreateLinkRequest()
             {
                 Key       = "Hello",
                 Url       = "http://www.google.com",
-                SessionId = "test",
-                TagIds    = new HashSet<int>() { tags[0].Id, tags[1].Id }
+                Tags      = new HashSet<string>() { tags[0].Key, tags[1].Key }
             };
 
-            sut.Handle(req);
+            var res = (LinkResponse)sut.Post(req);
 
-            Assert.AreNotEqual(2, _db.Count<LinkTag>(m => m.LinkId == req.Id));
+            Assert.AreEqual(2, _db.Count<LinkTag>(m => m.LinkId == res.Id));
         }
 
         [Test]
         public void CreatedLinkContainsKey()
         {
-            var sut = GetCommandHandler();
+            var sut = GetService();
 
-            var req = new CreateLinkCommand()
-            {
-                Key = "Hello",
-                Url = "http://www.google.com",
-                SessionId = "test",
-            };
-
-            sut.Handle(req);
-
-            Assert.AreEqual(req.Key, _db.Single<Link>(m => m.Id == req.Id).Key);
-        }
-
-        [Test]
-        public void CreatedLinkContainsUrl()
-        {
-            var sut = GetCommandHandler();
-
-            var req = new CreateLinkCommand()
-            {
-                Key = "Hello",
-                Url = "http://www.google.com",
-                SessionId = "test",
-            };
-
-            sut.Handle(req);
-
-            Assert.AreEqual(req.Url, _db.Single<Link>(m => m.Id == req.Id).Url);
-        }
-
-        [Test]
-        public void CreateLinkThrowsIfDuplicateKey()
-        {
-            var sut = GetCommandHandler();
-            
-            _db.Insert(new Link() { Key = "Hello", Url = "http://www.test.com", SessionId = "test" });
-
-            var req = new CreateLinkCommand()
+            var req = new CreateLinkRequest()
             {
                 Key = "Hello",
                 Url = "http://www.google.com"
             };
 
-            Assert.Throws<ValidationException>(() => sut.Handle(req));
+            var res = (LinkResponse)sut.Post(req);
+
+            Assert.AreEqual(req.Key, _db.Single<Link>(m => m.Id == res.Id).Key);
+        }
+
+        [Test]
+        public void CreatedLinkContainsUrl()
+        {
+            var sut = GetService();
+
+            var req = new CreateLinkRequest()
+            {
+                Key = "Hello",
+                Url = "http://www.google.com"
+            };
+
+            var res = (LinkResponse)sut.Post(req);
+
+            Assert.AreEqual(req.Url, _db.Single<Link>(m => m.Id == res.Id).Url);
         }
     }
 }

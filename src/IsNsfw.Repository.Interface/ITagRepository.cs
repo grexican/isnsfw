@@ -10,5 +10,6 @@ namespace IsNsfw.Repository.Interface
         bool KeyExists(string key);
         Tag GetByKey(string key);
         List<Tag> GetOrderedTags();
+        Dictionary<string, Tag> GetTagsDictionary();
     }
 }

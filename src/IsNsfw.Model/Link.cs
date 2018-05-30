@@ -4,11 +4,12 @@ using System.Text;
 using ServiceStack.Auth;
 using ServiceStack.DataAnnotations;
 using ServiceStack.Model;
+using ServiceStack.OrmLite;
 
 namespace IsNsfw.Model
 {
     [Alias("Links")]
-    public class Link : IHasIntId, ISoftDelete
+    public class Link : IHasIntId, ISoftDelete, ICreatedAt
     {
         [AutoIncrement]
         [PrimaryKey]
@@ -38,6 +39,9 @@ namespace IsNsfw.Model
 
         [Reference]
         public List<LinkTag> LinkTags { get; set; }
+
+        [Default(OrmLiteVariables.SystemUtc)]           // Populated with UTC Date by RDBMS
+        public DateTime CreatedAt { get; set; }
 
         //[Ignore]
         //public List<Tag> Tags { get; set; }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using IsNsfw.Model;
 using IsNsfw.Repository.Interface;
@@ -27,6 +28,11 @@ namespace IsNsfw.Repository
         public List<Tag> GetOrderedTags()
         {
             return Execute(db => db.Select(db.From<Tag>().Where(m => !m.IsDeleted).OrderBy(m => m.SortOrder).ThenBy(m => m.Key)));
+        }
+
+        public Dictionary<string, Tag> GetTagsDictionary()
+        {
+            return GetOrderedTags().ToDictionary(m => m.Key, m => m);
         }
     }
 }

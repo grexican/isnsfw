@@ -6,6 +6,10 @@ namespace IsNsfw.Model
     [CompositeIndex(nameof(LinkId), nameof(TagId))]
     public class LinkTag
     {
+        [PrimaryKey]
+        [Ignore]
+        public string Id => $"{this.LinkId}/{this.TagId}";
+
         [References(typeof(Link))]
         public int LinkId { get; set; }
 
