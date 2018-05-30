@@ -16,6 +16,7 @@ namespace IsNsfw.Model
         public int Id { get; set; }
 
         [Index(Unique = true)]
+        [StringLength(20)]
         public string Key { get; set; }
 
         [Required]

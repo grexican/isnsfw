@@ -8,7 +8,7 @@ namespace IsNsfw.ServiceInterface.Validators
 {
     public interface ITagValidator
     {
-        bool ValidateTagKey(string key);
+        bool ValidateTagExists(string key);
     }
 
     public class TagValidator : ITagValidator
@@ -20,7 +20,7 @@ namespace IsNsfw.ServiceInterface.Validators
             _tagRepo = tagRepo;
         }
 
-        public bool ValidateTagKey(string key)
+        public bool ValidateTagExists(string key)
         {
             return _tagRepo.KeyExists(key);
         }

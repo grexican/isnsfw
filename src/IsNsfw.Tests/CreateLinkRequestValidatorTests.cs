@@ -54,16 +54,6 @@ namespace IsNsfw.Tests
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkRequest.Url)));
         }
 
-        [Test]
-        public void ErrorIfNullKey()
-        {
-            var sut     = new CreateLinkRequestValidator(null, new TagValidator(_tagRepo));
-            var results = sut.Validate(new CreateLinkRequest() { });
-
-            Assert.IsFalse(results.IsValid);
-            Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkRequest.Key)));
-        }
-
         //[Test]
         //public void ErrorIfNullSessionId()
         //{

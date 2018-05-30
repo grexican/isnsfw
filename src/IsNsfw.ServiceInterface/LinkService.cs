@@ -5,14 +5,18 @@ using IsNsfw.Model;
 using IsNsfw.ServiceModel;
 using ServiceStack;
 using IsNsfw.Repository.Interface;
+using IsNsfw.ServiceInterface.Validators;
 using IsNsfw.ServiceModel.Types;
 
 namespace IsNsfw.ServiceInterface
 {
     public class LinkService : ServiceBase
         , IPost<CreateLinkRequest>
-        , IPostVoid<CreateLinkEventRequest>
+        , IGet<GetLinkRequest>
+        , IPost<CreateLinkEventRequest>
     {
+        const int StartKeyLength = 3;
+
         private readonly ILinkRepository _linkRepo;
         private readonly ITagRepository _tagRepo;
 
@@ -28,6 +32,16 @@ namespace IsNsfw.ServiceInterface
             var link = request.ConvertTo<Link>();
             link.SessionId = Session.Id;
             link.CreatedAt = DateTime.UtcNow;
+
+            if(link.Key.IsNullOrEmpty())
+            {
+                var currentIterator = StartKeyLength * 10;
+                do
+                {
+                    ++currentIterator;
+                    link.Key = KeyValidator.GenerateKey(currentIterator / 10);
+                } while (_linkRepo.KeyExists(link.Key));
+            }
 
             UnitOfWork(() =>
             {
@@ -57,17 +71,19 @@ namespace IsNsfw.ServiceInterface
                 }
             });
 
-            var ret = _linkRepo.GetLinkResponse(link.Id);
-
-            return ret;
+            return  _linkRepo.GetLinkResponse(link.Id);;
         }
 
-        public void Post(CreateLinkEventRequest request)
+        public object Post(CreateLinkEventRequest request)
         {
+            var link = _linkRepo.GetByKey(request.Key);
+
+            if(link == null) throw HttpError.NotFound($"Link with key '{request.Key}' not found.");
+
             UnitOfWork(() =>
             {
                 var c = request.ConvertTo<LinkEvent>();
-                c.LinkId = request.Id;
+                c.LinkId = link.Id;
                 c.CreatedAt = DateTime.UtcNow;
                 c.SessionId = Session.Id;
                 _linkRepo.CreateLinkEvent(c);
@@ -94,6 +110,17 @@ namespace IsNsfw.ServiceInterface
                         throw new System.ArgumentException($"Unknown {nameof(LinkEventType)} value '{c.LinkEventType}'", nameof(c.LinkEventType));
                 }
             });
+
+            return  _linkRepo.GetLinkResponse(link.Id);
+        }
+
+        public object Get(GetLinkRequest request)
+        {
+            var link = _linkRepo.GetByKey(request.Key);
+
+            if(link == null) throw HttpError.NotFound($"Link with key '{request.Key}' not found.");
+
+            return  _linkRepo.GetLinkResponse(link.Id);
         }
     }
 }

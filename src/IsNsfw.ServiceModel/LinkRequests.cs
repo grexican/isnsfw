@@ -13,10 +13,17 @@ namespace IsNsfw.ServiceModel
         public HashSet<string> Tags { get; set; }
     }
 
-    [Route("/links/{Id}/event", HttpMethods.Post)]
-    public class CreateLinkEventRequest : IPost, IReturnVoid
+    [Route("/links/{Key}", HttpMethods.Get)]
+    public class GetLinkRequest : IPost, IReturn<LinkResponse>
     {
-        public int Id { get; set; }
+        public string Key { get; set; }
+    }
+
+    [Route("/links/{Key}/event", HttpMethods.Post)]
+    [Route("/links/{Key}/{LinkEventType}", HttpMethods.Post)]
+    public class CreateLinkEventRequest : IPost, IReturn<LinkResponse>
+    {
+        public string Key { get; set; }
         public LinkEventType LinkEventType { get; set; }
     }
 }

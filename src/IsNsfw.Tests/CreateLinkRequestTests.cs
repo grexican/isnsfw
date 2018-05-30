@@ -104,6 +104,22 @@ namespace IsNsfw.Tests
         }
 
         [Test]
+        public void CanCreateLinkWithoutKey()
+        {
+            var sut = GetService();
+
+            var req = new CreateLinkRequest()
+            {
+                Url = "http://www.google.com",
+            };
+
+            var res = (LinkResponse)sut.Post(req);
+
+            Assert.AreNotEqual(0, res.Id);
+            Assert.IsNotNull(res.Key);
+        }
+
+        [Test]
         public void CanCreateLinkWithTags()
         {
             var sut = GetService();

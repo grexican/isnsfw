@@ -105,5 +105,19 @@ namespace IsNsfw.Tests
 
             Assert.Throws<WebServiceException>(() => client.Post(req));
         }
+
+        [Test]
+        public void CreateLinkThrowsIfBannedKey()
+        {
+            var client = CreateClient();
+            
+            var req = new CreateLinkRequest()
+            {
+                Key = KeyValidator.BannedTags[0],
+                Url = "http://www.google.com"
+            };
+
+            Assert.Throws<WebServiceException>(() => client.Post(req));
+        }
     }
 }

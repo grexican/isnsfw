@@ -101,7 +101,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.View
             };
 
@@ -117,7 +117,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.View
             };
 
@@ -135,7 +135,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.Preview
             };
 
@@ -151,7 +151,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.Preview
             };
 
@@ -169,7 +169,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.ClickThrough
             };
 
@@ -185,7 +185,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.ClickThrough
             };
 
@@ -203,7 +203,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.TurnBack
             };
 
@@ -219,7 +219,7 @@ namespace IsNsfw.Tests
 
             var req = new CreateLinkEventRequest()
             {
-                Id        = _link.Id,
+                Key = _link.Key,
                 LinkEventType = LinkEventType.TurnBack
             };
 
