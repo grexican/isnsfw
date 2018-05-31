@@ -1,0 +1,98 @@
+﻿@import "bootstrap";
+
+body
+{
+    padding-top: 80px;
+}
+
+form, form, form 
+{
+    label, .col-form-label, .form-label, button
+    {
+        @extend .text-uppercase;
+    }
+
+    &.form-horizontal
+    {
+        label, .col-form-label, .form-label
+        {
+            @extend .text-sm-right;
+        }
+    }
+}
+
+
+.tags-list
+{
+    @extend .d-flex;
+    @extend .flex-wrap;
+}
+
+.tag-card
+{
+    @extend .m-0;
+    @extend .p-1;
+
+    .tag-content-wrapper
+    {
+        @extend .m-0;
+        @extend .p-1;
+        @extend .text-left;
+        @extend .text-white;
+        @extend .rounded;
+        @extend .bg-secondary;
+        @extend .shadow-sm;
+    }
+
+    .tag-content
+    {
+        @extend .border;
+        @extend .border-white;
+        @extend .rounded;
+
+        .tag-header
+        {
+            @extend .d-flex;
+            @extend .align-items-stretch;
+            @extend .border-bottom;
+            @extend .border-white;
+
+            .tag-key
+            {
+                @extend .m-0;
+                @extend .p-0;
+                @extend .border-right;
+                @extend .border-white;
+                @extend .d-inline-flex;
+                @extend .align-middle;
+                @extend .text-nowrap;
+                @extend .text-uppercase;
+
+                h5
+                {
+                    @extend .m-0;
+                    @extend .p-0;
+                }
+
+                label
+                {
+                    @extend .m-0;
+                    @extend .p-0;
+                }
+            }
+
+            .tag-name
+            {
+                @extend .m-0;
+                @extend .p-0;
+                @extend .text-center;
+            }
+        }
+
+        .tag-desc
+        {
+            @extend small;
+            @extend .text-center;
+        }
+    }
+}

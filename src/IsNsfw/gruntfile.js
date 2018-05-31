@@ -13,7 +13,7 @@ module.exports = function (grunt) {
                 outputStyle: 'compressed' // Minify output
             },
             dev: {
-                src: ['wwwroot/assets/scss/bootstrap.scss'],
+                src: ['wwwroot/assets/scss/isnsfw.scss'],
                 dest: 'wwwroot/assets/css/isnsfw.css'
             }
         },
