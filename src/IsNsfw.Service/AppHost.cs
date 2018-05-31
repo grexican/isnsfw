@@ -1,9 +1,13 @@
-﻿using IsNsfw.Repository;
+﻿using IsNsfw.Model;
+using IsNsfw.Repository;
 using IsNsfw.Repository.Interface;
+using IsNsfw.ServiceInterface;
 using ServiceStack;
+using ServiceStack.Data;
+using ServiceStack.OrmLite;
 using SimpleInjector;
 
-namespace IsNsfw.ServiceInterface
+namespace IsNsfw.Service
 {
     public class AppHost : AppHostBase
     {
@@ -20,10 +24,38 @@ namespace IsNsfw.ServiceInterface
             Plugins.Add(new TemplatePagesFeature());
 
             var simpleContainer = new Container();
-            container.Adapter = new SimpleInjectorIocAdapter (simpleContainer);
+            container.Adapter = new SimpleInjectorIocAdapter(simpleContainer);
 
-            simpleContainer.Register(typeof(IRepository<,>), typeof(IRepository<,>).Assembly, typeof(LinkRepository).Assembly);
+            simpleContainer.RegisterInstance<IDbConnectionFactory>(new OrmLiteConnectionFactory(AppSettings.GetString("ConnectionString"), PostgreSqlDialect.Provider));
+            simpleContainer.Register<ILinkRepository, LinkRepository>();
+            simpleContainer.Register<ITagRepository, TagRepository>();
+            
+            simpleContainer.Verify(VerificationOption.VerifyAndDiagnose);
+
             //simpleContainer.RegisterDecorator(...); // https://cuttingedge.it/blogs/steven/pivot/entry.php?id=93
+
+            if(Config.DebugMode)
+            {
+                using(var db = simpleContainer.GetInstance<IDbConnectionFactory>().OpenDbConnection())
+                {
+                    using(var trans = db.OpenTransaction())
+                    {
+                        db.CreateTableIfNotExists<User>();
+                        db.CreateTableIfNotExists<Link>();
+                        db.CreateTableIfNotExists<Tag>();
+                        db.CreateTableIfNotExists<LinkTag>();
+
+                        trans.Commit();
+                    }
+                }
+            }
+        }
+
+        public override RouteAttribute[] GetRouteAttributes(System.Type requestType)
+        {
+            var routes = base.GetRouteAttributes(requestType);
+            routes.Each(x => x.Path = "/api" + x.Path);
+            return routes;
         }
     }
 }

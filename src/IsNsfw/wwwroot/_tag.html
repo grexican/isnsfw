@@ -1,0 +1,23 @@
+﻿{{ forSelection | default(false) | assignTo: forSelection }}
+
+<div class="tag-card col-lg-3 clickable-default-action" data-target="input[name=key]">
+    <div class="tag-content-wrapper m-1">
+        <div class="tag-content">
+            <div class="tag-header">
+                <div class="tag-key">
+                    <h5>
+                        <label>
+                            {{ `<input type="checkbox" name="key" value="{{ it.Key }}" />` | onlyIf(forSelection) | raw }} {{ it.Key }}
+                        </label>
+                    </h5>
+                </div>
+                <h5 class="tag-name">
+                    {{ it.Name }}
+                </h5>
+            </div>
+            <div class="tag-desc">
+                {{ it.ShortDescription }}
+            </div>
+        </div>
+    </div>
+</div>

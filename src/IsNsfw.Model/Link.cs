@@ -38,6 +38,9 @@ namespace IsNsfw.Model
         [References(typeof(User))]
         public int? UserId { get; set; }
 
+        //[PgSqlIntArray]
+        //public List<int> Tags { get; set; }
+
         [Reference]
         public List<LinkTag> LinkTags { get; set; }
 

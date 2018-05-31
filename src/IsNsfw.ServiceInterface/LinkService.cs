@@ -13,6 +13,7 @@ namespace IsNsfw.ServiceInterface
     public class LinkService : ServiceBase
         , IPost<CreateLinkRequest>
         , IGet<GetLinkRequest>
+        , IGet<GetLinkAnalyticsRequest>
         , IPost<CreateLinkEventRequest>
     {
         const int StartKeyLength = 3;
@@ -115,6 +116,11 @@ namespace IsNsfw.ServiceInterface
         }
 
         public object Get(GetLinkRequest request)
+        {
+            return Post(new CreateLinkEventRequest() { Key = request.Key, LinkEventType = LinkEventType.View });
+        }
+
+        public object Get(GetLinkAnalyticsRequest request)
         {
             var link = _linkRepo.GetByKey(request.Key);
 

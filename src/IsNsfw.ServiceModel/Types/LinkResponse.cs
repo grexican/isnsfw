@@ -12,8 +12,6 @@ namespace IsNsfw.ServiceModel.Types
 
         public string Url { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         public int TotalViews { get; set; }
         public int TotalPreviews { get; set; }
         public int TotalClickThroughs { get; set; }

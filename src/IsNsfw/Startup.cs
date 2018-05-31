@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Funq;
+using IsNsfw.Service;
 using ServiceStack;
 using ServiceStack.Configuration;
 using IsNsfw.ServiceInterface;
@@ -32,16 +33,14 @@ namespace IsNsfw
 
             var ah = new AppHost
             {
-                AppSettings = new NetCoreAppSettings(Configuration)
+                AppSettings = new MultiAppSettings(
+                                    new NetCoreAppSettings(Configuration),
+                                    new AppSettings()
+                                )
+                                    
             };
 
             app.UseServiceStack(ah);
-
-            ah.SetConfig(new HostConfig
-            { 
-                DebugMode          = env.IsDevelopment(), 
-                //HandlerFactoryPath = "api",
-            });
         }
     }
 }
