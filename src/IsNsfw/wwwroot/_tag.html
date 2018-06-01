@@ -7,12 +7,10 @@
                 <div class="tag-key">
                     <h5>
                         <label>
-                            {{* {{#if forSelection }}
+                            {{#if forSelection }}
                             <input type="checkbox" name="key" value="{{ it.Key }}" />
                             {{/if}}
-                            *}}
-
-                            {{ `<input type="checkbox" name="key" value="{{ it.Key }}" />` | onlyIf(forSelection) | raw }} {{ it.Key }}
+                            {{ it.Key }}
                         </label>
                     </h5>
                 </div>
