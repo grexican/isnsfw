@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Repository", "IsNsfw
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Repository.Interface", "IsNsfw.Repository.Interface\IsNsfw.Repository.Interface.csproj", "{C8FB8EBF-0CBD-4A75-90EC-540739278B6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Service", "IsNsfw.Service\IsNsfw.Service.csproj", "{DD64874C-464F-40B3-9965-C1A99F4816D4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Service", "IsNsfw.Service\IsNsfw.Service.csproj", "{DD64874C-464F-40B3-9965-C1A99F4816D4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IsNsfw.Mvc", "IsNsfw.Mvc\IsNsfw.Mvc.csproj", "{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +65,10 @@ Global
 		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD64874C-464F-40B3-9965-C1A99F4816D4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

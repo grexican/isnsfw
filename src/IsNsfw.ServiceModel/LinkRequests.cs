@@ -17,7 +17,7 @@ namespace IsNsfw.ServiceModel
     /// Registers a "view" event
     /// </summary>
     [Route("/links/{Key}", HttpMethods.Get)]
-    public class GetLinkRequest : IPost, IReturn<LinkResponse>
+    public class GetLinkRequest : IGet, IReturn<LinkResponse>
     {
         public string Key { get; set; }
     }

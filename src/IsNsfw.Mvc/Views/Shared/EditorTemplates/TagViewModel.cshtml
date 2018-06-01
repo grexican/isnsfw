@@ -1,0 +1,24 @@
+﻿@model TagViewModel
+
+<div class="tag-card col-lg-3 clickable-default-action" data-target="input[name*=IsSelected]">
+    <div class="tag-content-wrapper m-1">
+        <div class="tag-content">
+            <div class="tag-header">
+                <div class="tag-key">
+                    <h5>
+                        <label>
+                            @Html.CheckBoxFor(m => m.IsSelected)
+                            @Model.Key
+                        </label>
+                    </h5>
+                </div>
+                <h5 class="tag-name">
+                    @Model.Name
+                </h5>
+            </div>
+            <div class="tag-desc">
+                @Model.ShortDescription
+            </div>
+        </div>
+    </div>
+</div>

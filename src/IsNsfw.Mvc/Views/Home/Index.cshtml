@@ -1,15 +1,16 @@
-<!--
-title: IsNSFW - The SFW way to share NSFW content
--->
-{{ { } | sendToGateway('GetTagsRequest') | assignTo: tags }}
+﻿@model IndexViewModel
+
+@{
+    ViewBag.Title = "IsNSFW - The SFW way to share NSFW content";
+}
 
 <div class="jumbotron p-1 shadow">
     <h1>The <em>Safe For Work</em> way to share <em>Not Safe For Work</em> content</h1>
-    <div id="form-errors">
+    
+    @Html.ValidationSummary()
 
-    </div>
-
-    <form class="form-horizontal">
+    @using (Html.BeginForm(FormMethod.Post, null, new { @class = "form-horizontal" }))
+    {
         <div class="form-group row">
             <label for="url" class="col-sm-4 col-lg-2 col-form-label">URL</label>
             <div class="col-sm-8 col-lg-10">
@@ -19,7 +20,7 @@ title: IsNSFW - The SFW way to share NSFW content
         <div class="form-group row">
             <label for="url" class="col-sm-4 col-lg-2 col-form-label">Rating</label>
             <div class="col-sm-8 col-lg-10 tags-list">
-                {{ tags | selectPartial('_tag', { forSelection: true, scripts: scripts }) }}
+                @Html.EditorFor(m => m.Tags)
             </div>
         </div>
 
@@ -38,20 +39,6 @@ title: IsNSFW - The SFW way to share NSFW content
                 <button type="submit" class="btn btn-primary btn-block">Submit</button>
             </div>
         </div>
-    </form>
-</div>
+    }
 
-{{
- `<script>
-$('#Name').keyup(function () {
-  var name = $('#Name').val();
-  if (name) {
-    $.getJSON('/api/hello/' + name, function (r) {
-      $('#result').html(r.result);
-    });
-  } else {
-    $('#result').html('');
-  }
-});
-</script>` | appendTo: scripts
-}}
+</div>

@@ -8,10 +8,9 @@ namespace IsNsfw.ServiceInterface.Validators
 {
     public class KeyValidator
     {
-        public static readonly Regex TagRegex = new Regex(@"^[a-z0-9]{1,20}$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        public static readonly Regex TagRegex = new Regex(@"^[a-zA-Z0-9]{3,20}$", RegexOptions.Compiled);
         public static readonly string[] BannedTags = new []{ "api", "login", "logout", "account", "home", "index", "about", "aboutus", "contact", "tos", "faq" };
-        private static Random random = new Random();
-
+        private static readonly Random _random = new Random();
 
         public static bool ValidateKey(string key)
         {
@@ -21,9 +20,9 @@ namespace IsNsfw.ServiceInterface.Validators
 
         public static string GenerateKey(int length)
         {
-            const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            const string chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-            return new string(Enumerable.Range(1, length).Select(_ => chars[random.Next(chars.Length)]).ToArray());
+            return new string(Enumerable.Range(1, length).Select(_ => chars[_random.Next(chars.Length)]).ToArray());
         }
     }
 }

@@ -1,0 +1,16 @@
+{
+  "version": "1.0.0",
+  "name": "IsNSFW",
+  "private": true,
+  "devDependencies": {
+    "grunt": "^1.0.2",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-sass": "^2.1.0",
+    "grunt-typescript": "^0.8.0",
+    "gulp": "^3.9.1",
+    "gulp-sass": "^4.0.1"
+  },
+  "dependencies": {
+    "node-sass": "^4.9.0"
+  }
+}

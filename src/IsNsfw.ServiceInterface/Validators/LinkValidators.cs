@@ -17,8 +17,9 @@ namespace IsNsfw.ServiceInterface.Validators
         {
             _linkRepo = linkRepo;
             RuleFor(m => m.Key).MustBeValidKey().When(request => !request.Key.IsNullOrEmpty());
-            RuleFor(m => m.Url).NotEmpty().MustBeAUrl();
-            RuleFor(m => m.Tags).NotEmpty();
+            RuleFor(m => m.Url).NotEmpty();
+            RuleFor(m => m.Url).MustBeAUrl().When(request => !request.Url.IsNullOrEmpty());
+            RuleFor(m => m.Tags).NotEmpty().WithMessage("At least one tag is required.");
             RuleForEach(m => m.Tags).Must(tagValidator.ValidateTagExists).WithMessage(m => $"Tag '{m}' not found.");
         }
         
