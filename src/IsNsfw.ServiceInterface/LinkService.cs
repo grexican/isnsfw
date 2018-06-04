@@ -13,7 +13,7 @@ namespace IsNsfw.ServiceInterface
     public class LinkService : ServiceBase
         , IPost<CreateLinkRequest>
         , IGet<GetLinkRequest>
-        , IGet<GetLinkAnalyticsRequest>
+        //, IGet<GetLinkAnalyticsRequest>
         , IPost<CreateLinkEventRequest>
     {
         const int StartKeyLength = 3;
@@ -117,16 +117,20 @@ namespace IsNsfw.ServiceInterface
 
         public object Get(GetLinkRequest request)
         {
-            return Post(new CreateLinkEventRequest() { Key = request.Key, LinkEventType = LinkEventType.View });
-        }
-
-        public object Get(GetLinkAnalyticsRequest request)
-        {
             var link = _linkRepo.GetByKey(request.Key);
 
-            if(link == null) throw HttpError.NotFound($"Link with key '{request.Key}' not found.");
+            if (link == null) throw HttpError.NotFound($"Link with key '{request.Key}' not found.");
 
-            return  _linkRepo.GetLinkResponse(link.Id);
+            return _linkRepo.GetLinkResponse(link.Id);
         }
+
+        //public object Get(GetLinkAnalyticsRequest request)
+        //{
+        //    var link = _linkRepo.GetByKey(request.Key);
+
+        //    if(link == null) throw HttpError.NotFound($"Link with key '{request.Key}' not found.");
+
+        //    return  _linkRepo.GetLinkResponse(link.Id);
+        //}
     }
 }

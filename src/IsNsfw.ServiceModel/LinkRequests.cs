@@ -22,11 +22,11 @@ namespace IsNsfw.ServiceModel
         public string Key { get; set; }
     }
 
-    [Route("/links/{Key}/analytics", HttpMethods.Get)]
-    public class GetLinkAnalyticsRequest : IPost, IReturn<LinkResponse>
-    {
-        public string Key { get; set; }
-    }
+    //[Route("/links/{Key}/analytics", HttpMethods.Get)]
+    //public class GetLinkAnalyticsRequest : IPost, IReturn<LinkResponse>
+    //{
+    //    public string Key { get; set; }
+    //}
 
     [Route("/links/{Key}/event", HttpMethods.Post)]
     [Route("/links/{Key}/{LinkEventType}", HttpMethods.Post)]

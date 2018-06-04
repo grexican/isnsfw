@@ -147,5 +147,15 @@ namespace IsNsfw.Tests
             Assert.IsFalse(results.IsValid);
             Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkRequest.Key)));
         }
+
+        [Test]
+        public void FailsUrlWithoutScheme()
+        {
+            var sut     = new CreateLinkRequestValidator(null, new TagValidator(_tagRepo));
+            var results = sut.Validate(new CreateLinkRequest() { Url = "www.google.com" });
+
+            Assert.IsFalse(results.IsValid);
+            Assert.IsTrue(results.Errors.Any(m => m.PropertyName == nameof(CreateLinkRequest.Url)));
+        }
     }
 }

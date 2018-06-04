@@ -15,14 +15,14 @@ namespace IsNsfw.Mvc.Controllers
     {
         public async Task<IActionResult> Index()
         {
-            var vm = new IndexViewModel();
+            var vm = new CreateLinkViewModel();
             await InitializeViewModel(vm);
 
             return View(vm);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Index(IndexViewModel vm)
+        public async Task<IActionResult> Index(CreateLinkViewModel vm)
         {
             await InitializeViewModel(vm);
 
@@ -33,12 +33,11 @@ namespace IsNsfw.Mvc.Controllers
 
                 var link = Gateway.Send(req);
 
-                return Redirect($"~/{link.Key}");
+                return RedirectToAction("Share", "Link", new { id = link.Key });
             }, () => View(vm));
         }
 
-
-        private async Task InitializeViewModel(IndexViewModel vm)
+        private async Task InitializeViewModel(CreateLinkViewModel vm)
         {
             var tags = await Gateway.SendAsync(new GetTagsRequest() { });
 

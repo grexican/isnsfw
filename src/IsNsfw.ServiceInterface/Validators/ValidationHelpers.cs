@@ -9,9 +9,9 @@ namespace IsNsfw.ServiceInterface.Validators
 {
     public static class ValidationHelpers
     {
-        public static IRuleBuilderOptions<T, string> MustBeAUrl<T>(this IRuleBuilder<T, string> builder)
+        public static IRuleBuilderOptions<T, string> MustBeAUrl<T>(this IRuleBuilder<T, string> builder, bool allowWithoutScheme = false)
         {
-            return builder.Must(ValidationHelpers.Url).WithMessage("Invalid URL");
+            return builder.Must(Url).WithMessage("Invalid URL");
         }
 
         public static IRuleBuilderOptions<T, string> MustBeValidKey<T>(this IRuleBuilder<T, string> builder)

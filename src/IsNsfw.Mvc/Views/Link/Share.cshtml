@@ -1,0 +1,11 @@
+﻿@model LinkViewModel
+
+@{
+    ViewBag.Title = $"Share NSFW Link ({string.Join(", ", Model.Tags.Where(m => m.IsSelected).Select(m => m.Name))}) - {Model.Url})";
+}
+
+@using ServiceStack.Text;
+
+<pre>
+    @Model.Dump()
+</pre>
