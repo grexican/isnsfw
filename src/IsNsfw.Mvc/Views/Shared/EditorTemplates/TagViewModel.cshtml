@@ -7,8 +7,12 @@
                 <div class="tag-key">
                     <h5>
                         <label>
-                            @Html.HiddenFor(m => m.Key)
-                            @Html.CheckBoxFor(m => m.IsSelected)
+                            @if(ViewBag.DisplayOnly != true)
+                            {
+                                @Html.HiddenFor(m => m.Key)
+                                @Html.CheckBoxFor(m => m.IsSelected)
+                            }
+
                             @Model.Key
                         </label>
                     </h5>

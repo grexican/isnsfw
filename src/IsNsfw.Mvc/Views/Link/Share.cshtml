@@ -1,11 +1,58 @@
 ﻿@model LinkViewModel
 
+
 @{
     ViewBag.Title = $"Share NSFW Link ({string.Join(", ", Model.Tags.Where(m => m.IsSelected).Select(m => m.Name))}) - {Model.Url})";
 }
 
 @using ServiceStack.Text;
 
-<pre>
-    @Model.Dump()
-</pre>
+<div class="jumbotron p-1 shadow">
+    @*<pre>
+        @Model.Dump()
+    </pre>*@
+    
+    <div class="row justify-content-md-center">
+        <div class="col-lg-8 col-md-10 col-12">
+            <div class="input-group position-relative">
+                <p id="copied-overlay" class="block-overlay text-white" style="display: none;">
+                    Copied!
+                </p>
+
+                @Html.TextBoxFor(m => m.Url, new { @class="form-control bg-white", @readonly = "readonly" })
+                <div class="input-group-append"><button id="copy-url" data-clipboard-target="#@Html.IdFor(m => m.Url)" class="btn btn-secondary">Copy</button></div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="row">
+        <div class="col-lg-12 tags-list justify-content-md-center">
+            @Html.DisplayFor(m => m.Tags)
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+{
+    <environment include="Development">
+        <script src="~/lib/clipboard/clipboard.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/clipboard/clipboard.min.js"></script>
+    </environment>
+
+    <script>
+        var cb = new ClipboardJS('#copy-url');
+        cb.on('success', function (e)
+        {
+            $('#copied-overlay').fadeIn();
+
+            setTimeout(function ()
+            {
+                $('#copied-overlay').fadeOut();
+            }, 2000);
+        });
+    </script>
+}

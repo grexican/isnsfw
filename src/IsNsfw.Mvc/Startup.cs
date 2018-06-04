@@ -71,9 +71,10 @@ namespace IsNsfw.Mvc
                     template: "{controller=Home}/{action=Index}/{id?}");
 
                 routes.MapRoute(
-                    name:  "Link",
-                    template:  "{*id}",
+                    name: "Link",
+                    template: "{*id}",
                     defaults: new { controller = "Link", action = "Index" }
+                    , constraints: new { id = new LinkKeyRouteConstraint() }
                 );
             });
         }

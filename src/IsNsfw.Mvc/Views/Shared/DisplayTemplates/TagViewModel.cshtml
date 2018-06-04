@@ -1,0 +1,11 @@
+﻿@model TagViewModel
+
+@{
+    var vd = new ViewDataDictionary(ViewData.ModelMetadata, ViewData.ModelState);
+    vd.Model = Model;
+
+    vd["DisplayOnly"] = true;
+}
+
+
+@{ Html.RenderPartial("~/Views/Shared/EditorTemplates/TagViewModel.cshtml", vd); }
