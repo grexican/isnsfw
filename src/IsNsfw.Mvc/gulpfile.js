@@ -15,6 +15,9 @@ var deps = {
   "bootstrap": {
       "dist/js/*": ""
   },
+  "tether": {
+      "dist/js/*": ""
+  },
   "jquery": {
     "dist/*": ""
   },
