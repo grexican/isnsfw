@@ -1,7 +1,100 @@
-﻿@model IsNsfw.ServiceModel.Types.LinkResponse
+﻿@model LinkViewModel
 
-@using ServiceStack.Text;
 
-<pre>
-    @Model.Dump()
-</pre>
+@{
+    ViewBag.Title = $"NSFW Link ({string.Join(", ", Model.Tags.Where(m => m.IsSelected).Select(m => m.Name))}) - {Model.Url})";
+}
+
+
+<div class="jumbotron p-3 shadow">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading"><strong><i class="fas fa-exclamation-triangle"></i> Warning!</strong> The following link has been deemed <em><u>Not Safe For Work</u></em>:</h4>
+        <p class="mb-0">@Html.ActionLink(Model.Url, "ClickThrough", new { id = Model.Key })</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12 tags-list justify-content-md-center">
+            @Html.DisplayFor(m => m.Tags)
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-lg-12 tags-list justify-content-md-center">
+            <div class="link-action col-md-3 col-lg-2 mb-3 mb-md-0">
+                <a href="@Url.Action("ClickThrough", new { @id = Model.Key })" class="btn btn-lg btn-primary btn-block">Let's Go!</a>
+            </div>
+            <div class="link-action col-md-5 col-lg-4 mb-3 mb-md-0">
+                <a href="@Url.Action("TurnBack", new { @id = Model.Key })" class="btn btn-lg btn-danger btn-block">No Thanks (SFW)</a>
+            </div>
+            <div class="link-action col-md-4 col-lg-3 mb-3 mb-md-0">
+                <a href="@Url.Action("Preview", new { @id = Model.Key })" class="btn btn-lg btn-info btn-block">Preview (SFW)</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-3 link-preview justify-content-md-center" @*style="display: none;"*@>
+        <div class="col-lg-6 tags-list text-center">
+            <div class="preview-image-wrapper">
+                <div class="preview-image-overlay"></div>
+                <img class="preview-image" style="max-width: 100%; max-height: 400px" src="http://yiyinglu.com/failwhale/images/Homer_the_New_Fail_Whale_by_edwheeler.jpg" />
+            </div>
+
+            <div class="slide-container">
+                <input type="range" min="0" max="100" value="100" class="slider preview-slider">
+                <small>(slide to reveal the preview)</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-md-center mt-5">
+        <h4>Want to share this link with someone else?</h4>
+        <div class="col-lg-8 col-md-10 col-12">
+            <div class="input-group position-relative">
+                <p id="copied-overlay" class="block-overlay text-white" style="display: none;">
+                    Copied!
+                </p>
+
+                @Html.TextBoxFor(m => m.ShortUrl, new { @class = "form-control bg-white", @readonly = "readonly" })
+                <div class="input-group-append"><button id="copy-url" data-clipboard-target="#@Html.IdFor(m => m.ShortUrl)" class="btn btn-secondary">Copy</button></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Head
+{
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG" crossorigin="anonymous">
+}
+
+@section Scripts
+    {
+    <environment include="Development">
+        <script src="~/lib/clipboard/clipboard.js"></script>
+    </environment>
+    <environment exclude="Development">
+        <script src="~/lib/clipboard/clipboard.min.js"></script>
+    </environment>
+
+    <script>
+        var cb = new ClipboardJS('#copy-url');
+        cb.on('success', function (e) {
+            $('#copied-overlay').fadeIn();
+
+            setTimeout(function () {
+                $('#copied-overlay').fadeOut();
+            }, 2000);
+        });
+
+        $(function ()
+        {
+            var $overlay = $('.preview-image-overlay');
+
+            $(document).on('input', '.preview-slider', function ()
+            {
+                $overlay.css('opacity', $(this).val() / 100.0);
+            });
+
+            $('.preview-slider').trigger('input');
+        });
+    </script>
+}

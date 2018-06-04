@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Update="Views\Shared\DisplayTemplate\TagViewModel.cshtml">
+    <Content Update="Views\Shared\DisplayTemplates\TagViewModel.cshtml">
       <Pack>$(IncludeRazorContentInPack)</Pack>
     </Content>
     <Content Update="wwwroot\js\isnsfw.js">

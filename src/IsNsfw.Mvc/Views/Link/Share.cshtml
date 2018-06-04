@@ -1,17 +1,16 @@
 ﻿@model LinkViewModel
-
+@using ServiceStack.Text;
 
 @{
     ViewBag.Title = $"Share NSFW Link ({string.Join(", ", Model.Tags.Where(m => m.IsSelected).Select(m => m.Name))}) - {Model.Url})";
 }
 
-@using ServiceStack.Text;
-
-<div class="jumbotron p-1 shadow">
+<div class="jumbotron p-3 shadow">
     @*<pre>
-        @Model.Dump()
-    </pre>*@
-    
+            @Model.Dump()
+        </pre>*@
+    <h1><strike>Not</strike> Safe For Work: <small>@Model.Url</small></h1>
+
     <div class="row justify-content-md-center">
         <div class="col-lg-8 col-md-10 col-12">
             <div class="input-group position-relative">
@@ -19,23 +18,29 @@
                     Copied!
                 </p>
 
-                @Html.TextBoxFor(m => m.Url, new { @class="form-control bg-white", @readonly = "readonly" })
-                <div class="input-group-append"><button id="copy-url" data-clipboard-target="#@Html.IdFor(m => m.Url)" class="btn btn-secondary">Copy</button></div>
+                @Html.TextBoxFor(m => m.ShortUrl, new { @class = "form-control bg-white", @readonly = "readonly" })
+                <div class="input-group-append"><button id="copy-url" data-clipboard-target="#@Html.IdFor(m => m.ShortUrl)" class="btn btn-secondary">Copy</button></div>
             </div>
         </div>
     </div>
-    
+
 
     <div class="row">
         <div class="col-lg-12 tags-list justify-content-md-center">
             @Html.DisplayFor(m => m.Tags)
         </div>
     </div>
+
+    <div class="row mt-5">
+        <div class="col-lg-12 tags-list justify-content-md-center">
+            <a href="/@Model.Key" class="btn btn-link btn-lg">Want to see what your guests will see? Click Here!</a>
+        </div>
+    </div>
 </div>
 
 
 @section Scripts
-{
+    {
     <environment include="Development">
         <script src="~/lib/clipboard/clipboard.js"></script>
     </environment>
@@ -45,12 +50,10 @@
 
     <script>
         var cb = new ClipboardJS('#copy-url');
-        cb.on('success', function (e)
-        {
+        cb.on('success', function (e) {
             $('#copied-overlay').fadeIn();
 
-            setTimeout(function ()
-            {
+            setTimeout(function () {
                 $('#copied-overlay').fadeOut();
             }, 2000);
         });

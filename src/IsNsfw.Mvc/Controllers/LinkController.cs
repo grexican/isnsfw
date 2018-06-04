@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using IsNsfw.Model;
 using IsNsfw.Mvc.Models;
 using IsNsfw.ServiceModel;
 using IsNsfw.ServiceModel.Types;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using ServiceStack;
 
@@ -17,10 +17,13 @@ namespace IsNsfw.Mvc.Controllers
     {
         public async Task<IActionResult> Index(string id)
         {
-            var vm = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
 
-            if(vm == null)
+            if(link == null)
                 return RedirectToAction("Error", "Home");
+
+            var vm = link.ConvertTo<LinkViewModel>();
+            await InitializeViewModel(vm, link);
 
             return View(vm);
         }
@@ -38,19 +41,62 @@ namespace IsNsfw.Mvc.Controllers
             return View(vm);
         }
 
+        public async Task<IActionResult> Preview(string id)
+        {
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+
+            if(link == null)
+                return RedirectToAction("Error", "Home");
+
+            var vm = link.ConvertTo<LinkViewModel>();
+            await InitializeViewModel(vm, link);
+
+            return View(vm);
+        }
+
+        public async Task<IActionResult> ClickThrough(string id)
+        {
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+
+            if(link == null)
+                return RedirectToAction("Error", "Home");
+
+            var vm = link.ConvertTo<LinkViewModel>();
+            await InitializeViewModel(vm, link);
+
+            return Redirect(vm.Url);
+        }
+
+        public async Task<IActionResult> TurnBack(string id)
+        {
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+
+            if(link == null)
+                return RedirectToAction("Error", "Home");
+
+            var vm = link.ConvertTo<LinkViewModel>();
+            await InitializeViewModel(vm, link);
+
+            return RedirectToAction("Index", "Home");
+        }
+
         private async Task InitializeViewModel(LinkViewModel vm, LinkResponse link)
         {
+            var domain = HostContext.AppSettings.Get("Domain", new Uri(Request.GetDisplayUrl()).GetComponents(UriComponents.SchemeAndServer,UriFormat.Unescaped));
+
+            vm.ShortUrl = $"{domain.AppendPath(link.Key)}";
+
             var tags = await Gateway.SendAsync(new GetTagsRequest() { });
 
             vm.Tags = tags.Select(m =>
-            {
-                var t = m.ConvertTo<TagViewModel>();
-                t.IsSelected = vm.Tags?.FirstOrDefault(r => r.Key == m.Key)?.IsSelected ?? link?.Tags?.Contains(m.Key) ?? false;
+                {
+                    var t = m.ConvertTo<TagViewModel>();
+                    t.IsSelected = vm.Tags?.FirstOrDefault(r => r.Key == m.Key)?.IsSelected ?? link?.Tags?.Contains(m.Key) ?? false;
 
-                return t;
-            })
-            .Where(m => m.IsSelected) // for this VM, we only care about SELECTED tags
-            .ToList();
+                    return t;
+                })
+                .Where(m => m.IsSelected) // for this VM, we only care about SELECTED tags
+                .ToList();
         }
     }
 }

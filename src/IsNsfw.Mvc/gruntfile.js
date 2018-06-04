@@ -15,6 +15,10 @@ module.exports = function (grunt) {
             dev: {
                 src: ['wwwroot/scss/isnsfw.scss'],
                 dest: 'wwwroot/css/isnsfw.css'
+            },
+            fontawesome: {
+                src: ['wwwroot/scss/fontawesome/fontawesome.scss'],
+                dest: 'wwwroot/css/fontawesome.css'
             }
         },
         //typescript: {
