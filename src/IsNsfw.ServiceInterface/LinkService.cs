@@ -7,6 +7,7 @@ using ServiceStack;
 using IsNsfw.Repository.Interface;
 using IsNsfw.ServiceInterface.Validators;
 using IsNsfw.ServiceModel.Types;
+using ServiceStack.Messaging;
 
 namespace IsNsfw.ServiceInterface
 {
@@ -20,12 +21,15 @@ namespace IsNsfw.ServiceInterface
 
         private readonly ILinkRepository _linkRepo;
         private readonly ITagRepository _tagRepo;
+        private readonly IMessageFactory _msgFactory;
 
         public LinkService(ILinkRepository linkRepo
-                    , ITagRepository tagRepo)
+                    , ITagRepository tagRepo
+                    , IMessageFactory msgFactory)
         {
             _linkRepo = linkRepo;
             _tagRepo = tagRepo;
+            _msgFactory = msgFactory;
         }
 
         public object Post(CreateLinkRequest request)
@@ -69,6 +73,11 @@ namespace IsNsfw.ServiceInterface
                     }
 
                     _linkRepo.SetLinkTags(link.Id, link.LinkTags);
+
+                    using(var mqClient = _msgFactory.CreateMessageQueueClient())
+                    {
+                        mqClient.Publish(new CreateLinkScreenshotRequest() { Id = link.Id });
+                    }
                 }
             });
 

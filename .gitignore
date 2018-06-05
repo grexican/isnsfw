@@ -1,2 +1,3 @@
 .vagrant
 /src/IsNsfw.Mvc/wwwroot/lib
+/src/IsNsfw.Mvc/appsettings.env

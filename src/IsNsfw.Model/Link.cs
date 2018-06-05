@@ -23,6 +23,7 @@ namespace IsNsfw.Model
         [StringLength(20)]
         public string SessionId { get; set; }
 
+        [StringLength(1000)]
         public string Url { get; set; }
 
         public bool IsDeleted { get; set; }
@@ -43,6 +44,9 @@ namespace IsNsfw.Model
 
         [Reference]
         public List<LinkTag> LinkTags { get; set; }
+
+        [StringLength(200)]
+        public string ScreenshotUrl { get; set; }
 
         [Default(OrmLiteVariables.SystemUtc)]           // Populated with UTC Date by RDBMS
         public DateTime CreatedAt { get; set; }

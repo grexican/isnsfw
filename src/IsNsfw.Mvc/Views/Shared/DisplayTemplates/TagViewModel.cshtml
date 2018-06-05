@@ -7,5 +7,4 @@
     vd["DisplayOnly"] = true;
 }
 
-
-@{ Html.RenderPartial("~/Views/Shared/EditorTemplates/TagViewModel.cshtml", vd); }
+@{ await Html.RenderPartialAsync("~/Views/Shared/EditorTemplates/TagViewModel.cshtml", vd); }

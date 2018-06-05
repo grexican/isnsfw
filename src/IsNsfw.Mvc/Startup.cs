@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FluentMigrator.Runner;
+using IsNsfw.Migration;
 using IsNsfw.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +15,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using ServiceStack;
 using ServiceStack.Configuration;
+using ServiceStack.Redis;
 
 namespace IsNsfw.Mvc
 {
@@ -59,6 +63,7 @@ namespace IsNsfw.Mvc
             app.UseServiceStack(new AppHost
             {
                 AppSettings = new MultiAppSettings(
+                                    File.Exists("~/appsettings.env".MapHostAbsolutePath()) ? new TextFileSettings("~/appsettings.env".MapHostAbsolutePath()) : new DictionarySettings(),
                                     new NetCoreAppSettings(Configuration),
                                     new AppSettings()
                                 )
@@ -77,6 +82,25 @@ namespace IsNsfw.Mvc
                     , constraints: new { id = new LinkKeyRouteConstraint() }
                 );
             });
+
+            var svcProvider = new ServiceCollection()
+                .AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddPostgres()
+                    // Set the connection string
+                    .WithGlobalConnectionString(HostContext.AppSettings.GetString("ConnectionString"))
+                    // Define the assembly containing the migrations
+                    .ScanIn(typeof(InitializeDb).Assembly).For.Migrations())
+                // Enable logging to console in the FluentMigrator way
+                .AddLogging(lb => lb.AddFluentMigratorConsole())
+                // Build the service provider
+                .BuildServiceProvider(false);
+
+            var runner = svcProvider.GetRequiredService<IMigrationRunner>();
+
+            // Execute the migrations
+            //runner.Rollback(1000);
+            runner.MigrateUp();
         }
     }
 }

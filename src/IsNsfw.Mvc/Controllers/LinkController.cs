@@ -43,7 +43,7 @@ namespace IsNsfw.Mvc.Controllers
 
         public async Task<IActionResult> Preview(string id)
         {
-            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.Preview });
 
             if(link == null)
                 return RedirectToAction("Error", "Home");
@@ -51,12 +51,12 @@ namespace IsNsfw.Mvc.Controllers
             var vm = link.ConvertTo<LinkViewModel>();
             await InitializeViewModel(vm, link);
 
-            return View(vm);
+            return new EmptyResult();
         }
 
         public async Task<IActionResult> ClickThrough(string id)
         {
-            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.ClickThrough });
 
             if(link == null)
                 return RedirectToAction("Error", "Home");
@@ -69,7 +69,7 @@ namespace IsNsfw.Mvc.Controllers
 
         public async Task<IActionResult> TurnBack(string id)
         {
-            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.View });
+            var link = await Gateway.SendAsync(new CreateLinkEventRequest() { Key = id, LinkEventType = LinkEventType.TurnBack });
 
             if(link == null)
                 return RedirectToAction("Error", "Home");
@@ -85,6 +85,16 @@ namespace IsNsfw.Mvc.Controllers
             var domain = HostContext.AppSettings.Get("Domain", new Uri(Request.GetDisplayUrl()).GetComponents(UriComponents.SchemeAndServer,UriFormat.Unescaped));
 
             vm.ShortUrl = $"{domain.AppendPath(link.Key)}";
+
+            if(vm.ScreenshotUrl.IsNullOrEmpty())
+            {
+                vm.IsScreenshotReady = false;
+                vm.ScreenshotUrl = HostContext.AppSettings.GetString("DefaultScreenshotPlaceholder");
+            }
+            else
+            {
+                vm.IsScreenshotReady = true;
+            }
 
             var tags = await Gateway.SendAsync(new GetTagsRequest() { });
 

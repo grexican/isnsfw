@@ -7,10 +7,12 @@ using IsNsfw.Model;
 using IsNsfw.Repository;
 using IsNsfw.ServiceInterface;
 using IsNsfw.ServiceModel;
+using Moq;
 using NUnit.Framework;
 using ServiceStack;
 using ServiceStack.Host;
 using ServiceStack.Logging;
+using ServiceStack.Messaging;
 using ServiceStack.OrmLite;
 using ServiceStack.Testing;
 
@@ -81,7 +83,9 @@ namespace IsNsfw.Tests
 
         public LinkService GetService(string sessionId = SessionId)
         {
-            var ret = new LinkService(_linkRepo, _tagRepo);
+            var msgFactory = new Mock<IMessageFactory>();
+
+            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object);
 
             ret.Request = new BasicHttpRequest()
             {

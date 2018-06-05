@@ -17,6 +17,7 @@ using ServiceStack.Data;
 using ServiceStack.FluentValidation;
 using ServiceStack.Host;
 using ServiceStack.Logging;
+using ServiceStack.Messaging;
 using ServiceStack.OrmLite;
 using ServiceStack.Testing;
 
@@ -74,7 +75,9 @@ namespace IsNsfw.Tests
 
         public LinkService GetService(string sessionId = "12345")
         {
-            var ret = new LinkService(_linkRepo, _tagRepo);
+            var msgFactory = new Mock<IMessageFactory>();
+
+            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object);
 
             ret.Request = new BasicHttpRequest()
             {

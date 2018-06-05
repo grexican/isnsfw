@@ -12,5 +12,7 @@ namespace IsNsfw.Mvc.Models
         public string Url { get; set; }
         public string ShortUrl { get; set; }
         public List<TagViewModel> Tags { get; set; }
+        public string ScreenshotUrl { get; set; }
+        public bool IsScreenshotReady { get; set; }
     }
 }

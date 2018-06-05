@@ -78,5 +78,10 @@ namespace IsNsfw.Repository
         {
             Execute(db => db.UpdateAdd(() => new Link { TotalTurnBacks = 1 }, where: m => m.Id == linkId));
         }
+
+        public void SetScreenshotUrl(int linkId, string screenshotUrl)
+        {
+            Execute(db => db.UpdateOnly(() => new Link { ScreenshotUrl = screenshotUrl }, where: m => m.Id == linkId));
+        }
     }
 }

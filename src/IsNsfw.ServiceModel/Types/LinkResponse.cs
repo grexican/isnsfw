@@ -20,5 +20,6 @@ namespace IsNsfw.ServiceModel.Types
         public int? UserId { get; set; }
 
         public HashSet<string> Tags { get; set; }
+        public string ScreenshotUrl { get; set; }
     }
 }

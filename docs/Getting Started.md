@@ -8,18 +8,6 @@ CREATE USER isnsfw WITH PASSWORD 'IsNSFW';
 GRANT ALL PRIVILEGES ON DATABASE isnsfw TO isnsfw;
 ```
 
-Want some seed Tags?
+Need to test your migrations from the CLI? `> dotnet tool install -g FluentMigrator.DotNet.Cli`
 
-```
-INSERT INTO Tags (Key, Name, short_description, sort_order, is_deleted)
-VALUES ('O', 'Offensive', 'Content has a tendancy to offend', 1, false);
-
-INSERT INTO Tags (Key, Name, short_description, sort_order, is_deleted)
-VALUES ('G', 'Gore', 'Gory content lies within', 2, false);
-
-INSERT INTO Tags (Key, Name, short_description, sort_order, is_deleted)
-VALUES ('N', 'Nudity', 'You might see some body parts', 3, false);
-
-INSERT INTO Tags (Key, Name, short_description, sort_order, is_deleted)
-VALUES ('XXX', 'Pornography', 'Not a Vin Diesel movie', 4, false);
-```
+Then... https://fluentmigrator.github.io/articles/runners/dotnet-fm.html

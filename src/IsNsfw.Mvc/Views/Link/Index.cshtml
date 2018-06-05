@@ -27,16 +27,16 @@
                 <a href="@Url.Action("TurnBack", new { @id = Model.Key })" class="btn btn-lg btn-danger btn-block">No Thanks (SFW)</a>
             </div>
             <div class="link-action col-md-4 col-lg-3 mb-3 mb-md-0">
-                <a href="@Url.Action("Preview", new { @id = Model.Key })" class="btn btn-lg btn-info btn-block">Preview (SFW)</a>
+                <a href="javascript:void(0);" id="reveal-preview" class="btn btn-lg btn-info btn-block">Preview (SFW)</a>
             </div>
         </div>
     </div>
     
-    <div class="row mt-3 link-preview justify-content-md-center" @*style="display: none;"*@>
+    <div class="row mt-3 link-preview justify-content-md-center" id="link-preview" style="display: none;">
         <div class="col-lg-6 tags-list text-center">
             <div class="preview-image-wrapper">
-                <div class="preview-image-overlay"></div>
-                <img class="preview-image" style="max-width: 100%; max-height: 400px" src="http://yiyinglu.com/failwhale/images/Homer_the_New_Fail_Whale_by_edwheeler.jpg" />
+                <div class="preview-image-overlay"><span class="text">@(Model.IsScreenshotReady ? "NSFW!" : "Preview Not Ready")</span></div>
+                <img class="preview-image" src="@Model.ScreenshotUrl" />
             </div>
 
             <div class="slide-container">
@@ -95,6 +95,13 @@
             });
 
             $('.preview-slider').trigger('input');
+
+            $('#reveal-preview').on('click', function ()
+            {
+                $.get('@Url.Action("Preview", new { id = Model.Key })');
+                
+                $('#link-preview').slideDown();
+            });
         });
     </script>
 }

@@ -17,5 +17,6 @@ namespace IsNsfw.Repository.Interface
         void IncrementClickThroughs(int linkId);
         void IncrementPreviews(int linkId);
         void IncrementTurnBacks(int linkId);
+        void SetScreenshotUrl(int linkId, string screenshotUrl);
     }
 }
