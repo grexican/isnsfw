@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Service", "IsNsfw.Se
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IsNsfw.Mvc", "IsNsfw.Mvc\IsNsfw.Mvc.csproj", "{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}"
 EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{7B2690B8-69BB-4277-B847-F217E366C9CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8656A8CE-85C9-4A9B-A010-E12DF9BBD1CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B2690B8-69BB-4277-B847-F217E366C9CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B2690B8-69BB-4277-B847-F217E366C9CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B2690B8-69BB-4277-B847-F217E366C9CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B2690B8-69BB-4277-B847-F217E366C9CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

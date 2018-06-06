@@ -1,0 +1,2 @@
+ConnectionString=Server=host.docker.internal;Port=5432;Database=isnsfw;User ID=isnsfw;Password=IsNSFW;Pooling=true;
+Redis.Server=host.docker.internal:6379

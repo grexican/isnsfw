@@ -18,3 +18,8 @@ Migrate all:
 
 Rollback all:
 `\isnsfw\src\IsNsfw.Migration\bin\Debug\netcoreapp2.1>dotnet fm rollback -p postgres -c "Server=127.0.0.1;Port=5432;Database=isnsfw;User ID=isnsfw;Password=IsNSFW;Pooling=true;" -a IsNsfw.Migration.dll`
+
+
+# Testing Deployments
+You'll need Docker: https://store.docker.com/editions/community/docker-ce-desktop-windows
+Run `docker.bat` from `src/IsNsfw.Mvc`

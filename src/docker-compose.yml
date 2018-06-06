@@ -1,0 +1,10 @@
+version: '3.4'
+
+services:
+  isnsfw.mvc:
+    image: ${DOCKER_REGISTRY}isnsfwmvc
+    env_file:
+      - IsNsfw.Mvc/dockersettings.txt
+    build:
+      context: ./IsNsfw.Mvc/
+      dockerfile: Dockerfile

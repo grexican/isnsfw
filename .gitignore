@@ -1,3 +1,4 @@
 .vagrant
 /src/IsNsfw.Mvc/wwwroot/lib
 /src/IsNsfw.Mvc/appsettings.env
+/src/IsNsfw.Mvc/aws-ecs-tools-defaults.json
