@@ -76,6 +76,8 @@ namespace IsNsfw.Tests
         public LinkService GetService(string sessionId = "12345")
         {
             var msgFactory = new Mock<IMessageFactory>();
+            msgFactory.Setup(m => m.CreateMessageQueueClient()).Returns(Mock.Of<IMessageQueueClient>);
+            msgFactory.Setup(m => m.CreateMessageProducer()).Returns(Mock.Of<IMessageProducer>);
 
             var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object);
 
