@@ -10,7 +10,7 @@ using ServiceStack.OrmLite;
 namespace IsNsfw.Migration
 {
     [Migration(20180605)]
-    public class AddScreenshotUrl : FluentMigrator.Migration
+    public class _20180605_AddScreenshotUrl : FluentMigrator.Migration
     {
         public override void Up()
         {

@@ -5,6 +5,7 @@ using ServiceStack.OrmLite;
 
 namespace IsNsfw.Model
 {
+    [Alias("LinkEvents")]
     public class LinkEvent : IHasIntId, ICreatedAt
     {
         [AutoIncrement]

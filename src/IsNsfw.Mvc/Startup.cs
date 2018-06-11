@@ -90,7 +90,7 @@ namespace IsNsfw.Mvc
                     // Set the connection string
                     .WithGlobalConnectionString(HostContext.AppSettings.GetString("ConnectionString"))
                     // Define the assembly containing the migrations
-                    .ScanIn(typeof(InitializeDb).Assembly).For.Migrations())
+                    .ScanIn(typeof(_20180601_InitializeDb).Assembly).For.Migrations())
                 // Enable logging to console in the FluentMigrator way
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
                 // Build the service provider

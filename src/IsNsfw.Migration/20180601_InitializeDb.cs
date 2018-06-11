@@ -10,7 +10,7 @@ using ServiceStack.OrmLite;
 namespace IsNsfw.Migration
 {
     [Migration(20180601)]
-    public class InitializeDb : FluentMigrator.Migration
+    public class _20180601_InitializeDb : FluentMigrator.Migration
     {
         public override void Up()
         {
