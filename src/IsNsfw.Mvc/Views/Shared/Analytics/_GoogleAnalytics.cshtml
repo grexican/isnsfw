@@ -1,0 +1,17 @@
+﻿@using ServiceStack
+@{
+    var gaKey = HostContext.AppSettings.GetString("GoogleAnalytics.Id");
+}
+
+@if (!string.IsNullOrEmpty(gaKey))
+{
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=@gaKey"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', '@gaKey');
+    </script>
+}

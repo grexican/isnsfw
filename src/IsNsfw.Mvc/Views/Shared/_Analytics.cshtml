@@ -1,0 +1,10 @@
+﻿@using ServiceStack
+@{
+
+    var analytics = HostContext.AppSettings.Get("Analytics", new string[] { });
+}
+
+@foreach(var a in analytics)
+{
+    @Html.Partial("Analytics/_" + a + ".cshtml");
+}

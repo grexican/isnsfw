@@ -1,4 +1,7 @@
-﻿<!DOCTYPE html>
+﻿@{
+    ViewBag.Title = "IsNSFW";
+}
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -25,7 +28,7 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <partial name="_menu" />
+            <partial name="_Menu" />
         </div>
     </nav>
 
@@ -64,6 +67,8 @@
     </environment>
     
     <script src="~/js/ss-utils.js"></script>
+
+    <partial name="_Analytics" />
 
     @RenderSection("Scripts", required: false)
 </body>
