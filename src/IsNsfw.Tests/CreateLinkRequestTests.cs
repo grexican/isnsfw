@@ -8,6 +8,7 @@ using IsNsfw.Model;
 using IsNsfw.Repository;
 using IsNsfw.Repository.Interface;
 using IsNsfw.ServiceInterface;
+using IsNsfw.ServiceInterface.EventHandlers;
 using IsNsfw.ServiceModel;
 using IsNsfw.ServiceModel.Types;
 using Moq;
@@ -25,21 +26,21 @@ namespace IsNsfw.Tests
 {
     public class CreateLinkRequestTests
     {
-        private readonly LinkRepository _linkRepo;
-        private readonly TagRepository _tagRepo;
+        private readonly ILinkRepository _linkRepo;
+        private readonly ITagRepository _tagRepo;
         private readonly IDbConnection _db;
-        private readonly OrmLiteConnectionFactory _dbFactory;
-        private ServiceStackHost _appHost;
+        private readonly IDbConnectionFactory _dbFactory;
+        private TestAppHost _appHost;
+        private IEventBus _eventBus;
 
         public CreateLinkRequestTests()
         {
             LogManager.LogFactory = new DebugLogFactory(debugEnabled:true);
 
-            _appHost = new BasicAppHost().Init();
-            var container = _appHost.Container;
+            _appHost = new TestAppHost();
+            _appHost.Init();
 
-            _dbFactory = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
-            OrmLiteConfig.BeforeExecFilter = cmd => Debug.WriteLine(cmd.GetDebugString());
+            _dbFactory = _appHost.Container.Resolve<IDbConnectionFactory>();
 
             _db = _dbFactory.Open();
 
@@ -48,8 +49,9 @@ namespace IsNsfw.Tests
             _db.CreateTableIfNotExists<Tag>();
             _db.CreateTableIfNotExists<LinkTag>();
 
-            _linkRepo = new LinkRepository(_dbFactory);
-            _tagRepo = new TagRepository(_dbFactory);
+            _linkRepo = _appHost.Resolve<ILinkRepository>();
+            _tagRepo = _appHost.Resolve<ITagRepository>();
+            _eventBus = _appHost.Resolve<IEventBus>();
         }
 
         [TearDown]
@@ -79,7 +81,7 @@ namespace IsNsfw.Tests
             msgFactory.Setup(m => m.CreateMessageQueueClient()).Returns(Mock.Of<IMessageQueueClient>);
             msgFactory.Setup(m => m.CreateMessageProducer()).Returns(Mock.Of<IMessageProducer>);
 
-            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object);
+            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object, _eventBus);
 
             ret.Request = new BasicHttpRequest()
             {

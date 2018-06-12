@@ -5,11 +5,15 @@ using System.Diagnostics;
 using System.Text;
 using IsNsfw.Model;
 using IsNsfw.Repository;
+using IsNsfw.Repository.Interface;
+using IsNsfw.Service;
 using IsNsfw.ServiceInterface;
+using IsNsfw.ServiceInterface.EventHandlers;
 using IsNsfw.ServiceModel;
 using Moq;
 using NUnit.Framework;
 using ServiceStack;
+using ServiceStack.Data;
 using ServiceStack.Host;
 using ServiceStack.Logging;
 using ServiceStack.Messaging;
@@ -22,22 +26,22 @@ namespace IsNsfw.Tests
     {
         const string SessionId = "12345";
 
-        private readonly LinkRepository _linkRepo;
-        private readonly TagRepository _tagRepo;
+        private readonly ILinkRepository _linkRepo;
+        private readonly ITagRepository _tagRepo;
+        private readonly IEventBus _eventBus;
         private readonly IDbConnection _db;
-        private readonly OrmLiteConnectionFactory _dbFactory;
-        private ServiceStackHost _appHost;
+        private readonly IDbConnectionFactory _dbFactory;
+        private TestAppHost _appHost;
         private Link _link;
 
         public CreateLinkEventRequestTests()
         {
             LogManager.LogFactory = new DebugLogFactory(debugEnabled:true);
 
-            _appHost = new BasicAppHost().Init();
-            var container = _appHost.Container;
+            _appHost = new TestAppHost();
+            _appHost.Init();
 
-            _dbFactory                     = new OrmLiteConnectionFactory(":memory:", SqliteDialect.Provider);
-            OrmLiteConfig.BeforeExecFilter = cmd => Debug.WriteLine(cmd.GetDebugString());
+            _dbFactory = _appHost.Container.Resolve<IDbConnectionFactory>();
 
             _db = _dbFactory.Open();
 
@@ -47,8 +51,9 @@ namespace IsNsfw.Tests
             _db.CreateTableIfNotExists<LinkTag>();
             _db.CreateTableIfNotExists<LinkEvent>();
 
-            _linkRepo = new LinkRepository(_dbFactory);
-            _tagRepo  = new TagRepository(_dbFactory);
+            _linkRepo = _appHost.Resolve<ILinkRepository>();
+            _tagRepo  = _appHost.Resolve<ITagRepository>();
+            _eventBus = _appHost.Resolve<IEventBus>();
         }
 
         [SetUp]
@@ -85,7 +90,7 @@ namespace IsNsfw.Tests
         {
             var msgFactory = new Mock<IMessageFactory>();
 
-            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object);
+            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object, _eventBus);
 
             ret.Request = new BasicHttpRequest()
             {

@@ -4,6 +4,7 @@ using IsNsfw.Model;
 using IsNsfw.Repository;
 using IsNsfw.Repository.Interface;
 using IsNsfw.ServiceInterface;
+using IsNsfw.ServiceInterface.EventHandlers;
 using IsNsfw.ServiceInterface.Validators;
 using Microsoft.AspNetCore.Http;
 using ServiceStack;
@@ -21,7 +22,9 @@ namespace IsNsfw.Service
 {
     public class AppHost : AppHostBase
     {
-        public AppHost() : base("IsNSFW", typeof(MyServices).Assembly) { }
+        public SimpleInjector.Container SimpleContainer { get; protected set; }
+
+        public AppHost() : base("IsNSFW", typeof(LinkService).Assembly) { }
 
         // Configure your AppHost with the necessary configuration and dependencies your App needs
         public override void Configure(Funq.Container container)
@@ -36,56 +39,76 @@ namespace IsNsfw.Service
             Plugins.Add(new TemplatePagesFeature());
             Plugins.Add(new ValidationFeature());
 
-            var simpleContainer = new Container();
-            //simpleContainer.Options.DefaultScopedLifestyle = ScopedLifestyle.Flowing;
+            SimpleContainer = new Container();
+            //SimpleContainer.Options.DefaultScopedLifestyle = ScopedLifestyle.Flowing;
             
-            container.Adapter = new SimpleInjectorIocAdapter(simpleContainer);
+            container.Adapter = new SimpleInjectorIocAdapter(SimpleContainer);
 
+            InitializeCache();
+            InitializeDbConnectionFactory();
+            InitializeMessaging();
+
+
+            // repositories
+            SimpleContainer.Register<ILinkRepository, LinkRepository>();
+            SimpleContainer.Register<ITagRepository, TagRepository>();
+
+            // validators
+            SimpleContainer.Register<ITagValidator, TagValidator>();
+            SimpleContainer.Collection.Register(typeof(IValidator<>), this.ServiceAssemblies);
+            SimpleContainer.Collection.Register(typeof(ICreateLinkScreenshotHandler), this.ServiceAssemblies);
+
+            //SimpleContainer.RegisterDecorator(...); // https://cuttingedge.it/blogs/steven/pivot/entry.php?id=93
+
+            // events
+            SimpleContainer.RegisterInstance<IEventBus>(new DomainEventBus(SimpleContainer));
+            SimpleContainer.Collection.Register(typeof(IEventHandler<>), this.ServiceAssemblies);
+            
+            // messaging
+            SimpleContainer.Register<ICreateLinkScreenshotHandler, ScreenshotService>();
+
+            // Done container registration!
+            SimpleContainer.Verify(VerificationOption.VerifyOnly);
+
+            // Messaging Service
+            var mqHost = Container.Adapter.Resolve<IMessageService>();
+
+            mqHost.RegisterHandler<CreateLinkScreenshotRequest>(msg => Container.Adapter.Resolve<ICreateLinkScreenshotHandler>().Handle(msg));
+
+            mqHost.Start();
+        }
+
+        public virtual void InitializeMessaging()
+        {
+            SimpleContainer.RegisterSingleton<IMessageService>(() => Container.Adapter.Resolve<RedisMqServer>());
+        }
+
+        public virtual void InitializeDbConnectionFactory()
+        {
+            SimpleContainer.RegisterInstance<IDbConnectionFactory>(new OrmLiteConnectionFactory(AppSettings.GetString("ConnectionString"), PostgreSqlDialect.Provider));
+
+            OrmLiteConfig.DialectProvider.NamingStrategy = new OrmLiteNamingStrategyBase();
+        }
+
+        public virtual void InitializeCache()
+        {
             string redisServer = AppSettings.Get<string>("Redis.Server", (string)null);
-            simpleContainer.Register<MemoryCacheClient>(() => new MemoryCacheClient(), Lifestyle.Transient);
+            SimpleContainer.Register<MemoryCacheClient>(() => new MemoryCacheClient(), Lifestyle.Transient);
 
             if (redisServer != null)
             {
-                simpleContainer.Register<IRedisClientsManager>(() => new PooledRedisClientManager(new[] { redisServer }, new[] { redisServer }, AppSettings.Get("Redis.Instance", (long)1)), Lifestyle.Transient);
-                simpleContainer.Register<ICacheClient>(() => container.Adapter.Resolve<IRedisClientsManager>().GetCacheClient(), Lifestyle.Transient);
+                SimpleContainer.Register<IRedisClientsManager>(() => new PooledRedisClientManager(new[] { redisServer }, new[] { redisServer }, AppSettings.Get("Redis.Instance", (long)1)), Lifestyle.Transient);
+                SimpleContainer.Register<ICacheClient>(() => Container.Adapter.Resolve<IRedisClientsManager>().GetCacheClient(), Lifestyle.Transient);
 
-                simpleContainer.Register<IMessageFactory >(() => new RedisMessageFactory(container.Adapter.Resolve<IRedisClientsManager>()), Lifestyle.Transient);
-                simpleContainer.Register<IMessageProducer>(() => container.Adapter.Resolve<IMessageFactory>().CreateMessageProducer(), Lifestyle.Transient);
-                simpleContainer.Register<IMessageQueueClient>(() => container.Adapter.Resolve<IMessageFactory>().CreateMessageQueueClient(), Lifestyle.Transient);
-                simpleContainer.Register<RedisMqServer>(() => new RedisMqServer(container.Adapter.Resolve<IRedisClientsManager>(), 5), Lifestyle.Singleton);
+                SimpleContainer.Register<IMessageFactory >(() => new RedisMessageFactory(Container.Adapter.Resolve<IRedisClientsManager>()), Lifestyle.Transient);
+                SimpleContainer.Register<IMessageProducer>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageProducer(), Lifestyle.Transient);
+                SimpleContainer.Register<IMessageQueueClient>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageQueueClient(), Lifestyle.Transient);
+                SimpleContainer.Register<RedisMqServer>(() => new RedisMqServer(Container.Adapter.Resolve<IRedisClientsManager>(), 5), Lifestyle.Singleton);
             }
             else
             {
                 throw new Exception("No Redis Server configured for environment."); // in prod, we need a real cache
             }
-
-            simpleContainer.RegisterInstance<IDbConnectionFactory>(new OrmLiteConnectionFactory(AppSettings.GetString("ConnectionString"), PostgreSqlDialect.Provider));
-
-            OrmLiteConfig.DialectProvider.NamingStrategy = new OrmLiteNamingStrategyBase();
-
-            // repositories
-            simpleContainer.Register<ILinkRepository, LinkRepository>();
-            simpleContainer.Register<ITagRepository, TagRepository>();
-
-            // validators
-            simpleContainer.Register<ITagValidator, TagValidator>();
-            simpleContainer.Collection.Register(typeof(IValidator<>), this.ServiceAssemblies);
-            simpleContainer.Collection.Register(typeof(ICreateLinkScreenshotHandler), this.ServiceAssemblies);
-
-            //simpleContainer.RegisterDecorator(...); // https://cuttingedge.it/blogs/steven/pivot/entry.php?id=93
-
-            // messaging
-            simpleContainer.Register<ICreateLinkScreenshotHandler, ScreenshotService>();
-
-            // done!
-            simpleContainer.Verify(VerificationOption.VerifyOnly);
-
-            // Messaging Service
-            var mqHost = container.Adapter.Resolve<RedisMqServer>();
-
-            mqHost.RegisterHandler<CreateLinkScreenshotRequest>(msg => container.Adapter.Resolve<ICreateLinkScreenshotHandler>().Handle(msg));
-
-            mqHost.Start();
         }
 
         //public override RouteAttribute[] GetRouteAttributes(System.Type requestType)

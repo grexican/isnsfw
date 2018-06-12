@@ -7,6 +7,8 @@ namespace IsNsfw.ServiceInterface
     {
         private readonly Container _container;
 
+        public Container Container => _container;
+
         public SimpleInjectorIocAdapter(Container container)
         {
             this._container = container;

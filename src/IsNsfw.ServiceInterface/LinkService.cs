@@ -5,6 +5,8 @@ using IsNsfw.Model;
 using IsNsfw.ServiceModel;
 using ServiceStack;
 using IsNsfw.Repository.Interface;
+using IsNsfw.ServiceInterface.EventHandlers;
+using IsNsfw.ServiceInterface.Events;
 using IsNsfw.ServiceInterface.Validators;
 using IsNsfw.ServiceModel.Types;
 using ServiceStack.Messaging;
@@ -22,14 +24,17 @@ namespace IsNsfw.ServiceInterface
         private readonly ILinkRepository _linkRepo;
         private readonly ITagRepository _tagRepo;
         private readonly IMessageFactory _msgFactory;
+        private readonly IEventBus _domainEventBus;
 
         public LinkService(ILinkRepository linkRepo
                     , ITagRepository tagRepo
-                    , IMessageFactory msgFactory)
+                    , IMessageFactory msgFactory
+                    , IEventBus domainEventBus)
         {
             _linkRepo = linkRepo;
             _tagRepo = tagRepo;
             _msgFactory = msgFactory;
+            _domainEventBus = domainEventBus;
         }
 
         public object Post(CreateLinkRequest request)
@@ -81,7 +86,7 @@ namespace IsNsfw.ServiceInterface
                 }
             });
 
-            return  _linkRepo.GetLinkResponse(link.Id);;
+            return  _linkRepo.GetLinkResponse(link.Id);
         }
 
         public object Post(CreateLinkEventRequest request)
@@ -98,27 +103,7 @@ namespace IsNsfw.ServiceInterface
                 c.SessionId = Session.Id;
                 _linkRepo.CreateLinkEvent(c);
 
-                switch(c.LinkEventType)
-                {
-                    case LinkEventType.View:
-                        _linkRepo.IncrementTotalViews(c.LinkId);
-                        break;
-
-                    case LinkEventType.ClickThrough:
-                        _linkRepo.IncrementClickThroughs(c.LinkId);
-                        break;
-
-                    case LinkEventType.Preview:
-                        _linkRepo.IncrementPreviews(c.LinkId);
-                        break;
-
-                    case LinkEventType.TurnBack:
-                        _linkRepo.IncrementTurnBacks(c.LinkId);
-                        break;
-
-                    default:
-                        throw new System.ArgumentException($"Unknown {nameof(LinkEventType)} value '{c.LinkEventType}'", nameof(c.LinkEventType));
-                }
+                _domainEventBus.Handle(new LinkEventCreatedEvent(c));
             });
 
             return  _linkRepo.GetLinkResponse(link.Id);

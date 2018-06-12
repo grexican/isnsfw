@@ -14,6 +14,7 @@
     <ProjectReference Include="..\IsNsfw.Repository\IsNsfw.Repository.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceInterface\IsNsfw.ServiceInterface.csproj" />
     <ProjectReference Include="..\IsNsfw.ServiceModel\IsNsfw.ServiceModel.csproj" />
+    <ProjectReference Include="..\IsNsfw.Service\IsNsfw.Service.csproj" />
     <PackageReference Include="Moq" Version="4.8.2" />
 
     <PackageReference Include="NUnit" Version="3.10.1" />
