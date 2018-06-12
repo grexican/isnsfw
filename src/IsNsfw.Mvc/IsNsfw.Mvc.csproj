@@ -4,6 +4,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <TypeScriptToolsVersion>2.8</TypeScriptToolsVersion>
     <DockerComposeProjectPath>..\docker-compose.dcproj</DockerComposeProjectPath>
+    <UserSecretsId>9b9073df-d2d8-46a7-8552-d9e91298c668</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>

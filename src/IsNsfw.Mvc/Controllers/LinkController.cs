@@ -82,7 +82,10 @@ namespace IsNsfw.Mvc.Controllers
 
         private async Task InitializeViewModel(LinkViewModel vm, LinkResponse link)
         {
-            var domain = HostContext.AppSettings.Get("Domain", new Uri(Request.GetDisplayUrl()).GetComponents(UriComponents.SchemeAndServer,UriFormat.Unescaped));
+            var domain = HostContext.AppSettings.GetString("Domain");
+
+            if(domain.IsNullOrEmpty())
+                domain = new Uri(Request.GetDisplayUrl()).GetComponents(UriComponents.SchemeAndServer,UriFormat.Unescaped);
 
             vm.ShortUrl = $"{domain.AppendPath(link.Key)}";
 
