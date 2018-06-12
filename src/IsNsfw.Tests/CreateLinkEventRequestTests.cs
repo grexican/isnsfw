@@ -90,7 +90,7 @@ namespace IsNsfw.Tests
         {
             var msgFactory = new Mock<IMessageFactory>();
 
-            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object, _eventBus);
+            var ret = new LinkService(_linkRepo, _tagRepo, _eventBus);
 
             ret.Request = new BasicHttpRequest()
             {

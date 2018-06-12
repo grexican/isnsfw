@@ -32,6 +32,7 @@ namespace IsNsfw.Tests
         private readonly IDbConnectionFactory _dbFactory;
         private TestAppHost _appHost;
         private IEventBus _eventBus;
+        private IMessageFactory _msgFactory;
 
         public CreateLinkRequestTests()
         {
@@ -52,6 +53,7 @@ namespace IsNsfw.Tests
             _linkRepo = _appHost.Resolve<ILinkRepository>();
             _tagRepo = _appHost.Resolve<ITagRepository>();
             _eventBus = _appHost.Resolve<IEventBus>();
+            _msgFactory = _appHost.Resolve<IMessageFactory>();
         }
 
         [TearDown]
@@ -77,11 +79,7 @@ namespace IsNsfw.Tests
 
         public LinkService GetService(string sessionId = "12345")
         {
-            var msgFactory = new Mock<IMessageFactory>();
-            msgFactory.Setup(m => m.CreateMessageQueueClient()).Returns(Mock.Of<IMessageQueueClient>);
-            msgFactory.Setup(m => m.CreateMessageProducer()).Returns(Mock.Of<IMessageProducer>);
-
-            var ret = new LinkService(_linkRepo, _tagRepo, msgFactory.Object, _eventBus);
+            var ret = new LinkService(_linkRepo, _tagRepo, _eventBus);
 
             ret.Request = new BasicHttpRequest()
             {
@@ -226,6 +224,25 @@ namespace IsNsfw.Tests
             var res = (LinkResponse)sut.Post(req);
 
             Assert.AreEqual(req.Url, _db.Single<Link>(m => m.Id == res.Id).Url);
+        }
+
+        [Test]
+        public void CreateLinkAlsoGeneratesScreenshot()
+        {
+            var sut = GetService();
+
+            var req = new CreateLinkRequest()
+            {
+                Key = "Hello",
+                Url = "http://www.google.com",
+            };
+
+            var res = (LinkResponse)sut.Post(req);
+
+            var link = _db.Single<Link>(m => m.Id == res.Id);
+
+            Assert.IsNotNull(link);
+            Assert.IsNotNull(link.ScreenshotUrl);
         }
     }
 }

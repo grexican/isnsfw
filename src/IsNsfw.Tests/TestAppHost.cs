@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using IsNsfw.Repository.Interface;
 using IsNsfw.Service;
 using IsNsfw.ServiceInterface;
+using Moq;
 using ServiceStack.Caching;
 using ServiceStack.Data;
 using ServiceStack.Messaging;
@@ -14,6 +16,8 @@ namespace IsNsfw.Tests
 {
     public class TestAppHost : AppHost
     {
+        public const string ScreenshotUrl = "http://screen.shot/image.png";
+
         public override void InitializeCache()
         {
             var mcc = new MemoryCacheClient();
@@ -32,6 +36,14 @@ namespace IsNsfw.Tests
         public override void InitializeMessaging()
         {
             SimpleContainer.RegisterSingleton<IMessageService>(() => new InMemoryTransientMessageService());
+        }
+
+        public override void InitializeIntegrations()
+        {
+            var scGen = new Mock<IScreenshotGenerator>();
+            scGen.Setup(m => m.Process(It.IsAny<string>())).Returns(() => ScreenshotUrl);
+
+            SimpleContainer.RegisterSingleton<IScreenshotGenerator>(() => scGen.Object);
         }
     }
 }

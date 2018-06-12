@@ -23,17 +23,14 @@ namespace IsNsfw.ServiceInterface
 
         private readonly ILinkRepository _linkRepo;
         private readonly ITagRepository _tagRepo;
-        private readonly IMessageFactory _msgFactory;
         private readonly IEventBus _domainEventBus;
 
         public LinkService(ILinkRepository linkRepo
                     , ITagRepository tagRepo
-                    , IMessageFactory msgFactory
                     , IEventBus domainEventBus)
         {
             _linkRepo = linkRepo;
             _tagRepo = tagRepo;
-            _msgFactory = msgFactory;
             _domainEventBus = domainEventBus;
         }
 
@@ -78,12 +75,9 @@ namespace IsNsfw.ServiceInterface
                     }
 
                     _linkRepo.SetLinkTags(link.Id, link.LinkTags);
-
-                    using(var mqClient = _msgFactory.CreateMessageQueueClient())
-                    {
-                        mqClient.Publish(new CreateLinkScreenshotRequest() { Id = link.Id });
-                    }
                 }
+
+                PublishMessage(new CreateLinkScreenshotRequest() { Id = link.Id });
             });
 
             return  _linkRepo.GetLinkResponse(link.Id);

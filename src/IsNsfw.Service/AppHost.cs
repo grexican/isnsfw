@@ -45,9 +45,16 @@ namespace IsNsfw.Service
             container.Adapter = new SimpleInjectorIocAdapter(SimpleContainer);
 
             InitializeCache();
-            InitializeDbConnectionFactory();
-            InitializeMessaging();
 
+            InitializeDbConnectionFactory();
+
+            InitializeMessaging();
+            SimpleContainer.Register(() => Container.Adapter.Resolve<IMessageService>().MessageFactory);
+            SimpleContainer.Register<IMessageProducer>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageProducer(), Lifestyle.Transient);
+            SimpleContainer.Register<IMessageQueueClient>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageQueueClient(), Lifestyle.Transient);
+
+
+            InitializeIntegrations();
 
             // repositories
             SimpleContainer.Register<ILinkRepository, LinkRepository>();
@@ -64,22 +71,31 @@ namespace IsNsfw.Service
             SimpleContainer.RegisterInstance<IEventBus>(new DomainEventBus(SimpleContainer));
             SimpleContainer.Collection.Register(typeof(IEventHandler<>), this.ServiceAssemblies);
             
-            // messaging
-            SimpleContainer.Register<ICreateLinkScreenshotHandler, ScreenshotService>();
-
             // Done container registration!
             SimpleContainer.Verify(VerificationOption.VerifyOnly);
 
+            OnConfigEnding();
+
             // Messaging Service
             var mqHost = Container.Adapter.Resolve<IMessageService>();
-
-            mqHost.RegisterHandler<CreateLinkScreenshotRequest>(msg => Container.Adapter.Resolve<ICreateLinkScreenshotHandler>().Handle(msg));
+            
+            mqHost.RegisterHandler<CreateLinkScreenshotRequest>(base.ExecuteMessage);
 
             mqHost.Start();
         }
 
+        public virtual void InitializeIntegrations()
+        {
+            SimpleContainer.RegisterSingleton<IScreenshotGenerator>(() => Container.Adapter.Resolve<BrowshotScreenshotGenerator>());
+        }
+
+        public virtual void OnConfigEnding()
+        {
+        }
+
         public virtual void InitializeMessaging()
         {
+            SimpleContainer.RegisterSingleton<RedisMqServer>(() => new RedisMqServer(Container.Adapter.Resolve<IRedisClientsManager>(), 5));
             SimpleContainer.RegisterSingleton<IMessageService>(() => Container.Adapter.Resolve<RedisMqServer>());
         }
 
@@ -99,11 +115,6 @@ namespace IsNsfw.Service
             {
                 SimpleContainer.Register<IRedisClientsManager>(() => new PooledRedisClientManager(new[] { redisServer }, new[] { redisServer }, AppSettings.Get("Redis.Instance", (long)1)), Lifestyle.Transient);
                 SimpleContainer.Register<ICacheClient>(() => Container.Adapter.Resolve<IRedisClientsManager>().GetCacheClient(), Lifestyle.Transient);
-
-                SimpleContainer.Register<IMessageFactory >(() => new RedisMessageFactory(Container.Adapter.Resolve<IRedisClientsManager>()), Lifestyle.Transient);
-                SimpleContainer.Register<IMessageProducer>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageProducer(), Lifestyle.Transient);
-                SimpleContainer.Register<IMessageQueueClient>(() => Container.Adapter.Resolve<IMessageFactory>().CreateMessageQueueClient(), Lifestyle.Transient);
-                SimpleContainer.Register<RedisMqServer>(() => new RedisMqServer(Container.Adapter.Resolve<IRedisClientsManager>(), 5), Lifestyle.Singleton);
             }
             else
             {

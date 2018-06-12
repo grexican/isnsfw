@@ -19,17 +19,60 @@ namespace IsNsfw.ServiceInterface
         object Handle(IMessage<CreateLinkScreenshotRequest> request);
     }
 
-    public class ScreenshotService : ServiceBase, ICreateLinkScreenshotHandler
-        //, IAny<CreateLinkScreenshotRequest>
+    public interface IScreenshotGenerator
+    {
+        string Process(string url);
+    }
+
+    public class BrowshotScreenshotGenerator : IScreenshotGenerator
     {
         private const string CreateUrl  = "https://api.browshot.com/api/v1/screenshot/create?key=##KEY##&format=jpeg&url=##URL##";
         private const string InfoUrl    = "https://api.browshot.com/api/v1/screenshot/info?id=##ID##&key=##KEY##";
 
-        private readonly ILinkRepository _linkRepo;
+        public string Process(string url)
+        {
+            var key = HostContext.AppSettings.Get<string>("Browshot.ApiKey", null);
+            var apiUrl = CreateUrl.Replace("##KEY##", key).Replace("##URL##", url.UrlEncode());
 
-        public ScreenshotService(ILinkRepository linkRepo)
+            var jsonString = apiUrl.GetStringFromUrl();
+
+            var json = JsonObject.Parse(jsonString);
+            var id   = json["id"];
+
+
+            apiUrl = InfoUrl.Replace("##ID##", id).Replace("##KEY##", key);
+
+            var    retriesLeft   = 30;
+            string status        = null;
+            string screenshotUrl = null;
+
+            do
+            {
+                Thread.Sleep(1000); // sleep a second... it takes a while to generate these
+                --retriesLeft;
+
+                jsonString = apiUrl.GetStringFromUrl();
+                json       = JsonObject.Parse(jsonString);
+
+                status = json["status"];
+                
+                if(status == "finished") screenshotUrl = json["screenshot_url"];
+            } while (status != "finished" && retriesLeft > 0);
+
+            return screenshotUrl;
+        }
+    }
+
+    public class ScreenshotService : ServiceBase, ICreateLinkScreenshotHandler
+        , IAny<CreateLinkScreenshotRequest>
+    {        
+        private readonly ILinkRepository _linkRepo;
+        private readonly IScreenshotGenerator _screenshotGenerator;
+
+        public ScreenshotService(ILinkRepository linkRepo, IScreenshotGenerator screenshotGenerator)
         {
             _linkRepo = linkRepo;
+            _screenshotGenerator = screenshotGenerator;
         }
 
         public object Handle(IMessage<CreateLinkScreenshotRequest> message)
@@ -40,32 +83,7 @@ namespace IsNsfw.ServiceInterface
 
             if (link == null) throw HttpError.NotFound($"Link with ID '{request.Id}' not found.");
 
-            var key = HostContext.AppSettings.Get<string>("Browshot.ApiKey", null);
-            var url = CreateUrl.Replace("##KEY##", key).Replace("##URL##", link.Url.UrlEncode());
-
-            var jsonString = url.GetStringFromUrl();
-
-            var json = JsonObject.Parse(jsonString);
-            var id = json["id"];
-
-            url = InfoUrl.Replace("##ID##", id).Replace("##KEY##", key);
-
-            var retriesLeft = 30;
-            string status = null;
-            string screenshotUrl = null;
-
-            do
-            {
-                Thread.Sleep(1000); // sleep a second... it takes a while to generate these
-                --retriesLeft;
-
-                jsonString = url.GetStringFromUrl();
-                json = JsonObject.Parse(jsonString);
-
-                status = json["status"];
-                
-                if(status == "finished") screenshotUrl = json["screenshot_url"];
-            } while (status != "finished" && retriesLeft > 0);
+            var screenshotUrl = _screenshotGenerator.Process(link.Url);
 
             if(screenshotUrl == null)
                 throw HttpError.NotFound($"Not able to generate screenshot for Link with ID '{request.Id}'.");
@@ -77,10 +95,10 @@ namespace IsNsfw.ServiceInterface
             return link;
         }
 
-        //public object Any(CreateLinkScreenshotRequest request)
-        //{
-        //    var msg = new Message<CreateLinkScreenshotRequest>(request);
-        //    return Handle(msg);
-        //}
+        public object Any(CreateLinkScreenshotRequest request)
+        {
+            var msg = new Message<CreateLinkScreenshotRequest>(request);
+            return Handle(msg);
+        }
     }
 }
